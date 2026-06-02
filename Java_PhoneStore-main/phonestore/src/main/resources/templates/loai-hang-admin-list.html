@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: html-head('Quản lý loại hàng - TechSophist')}"></head>
+<body style="background-color: var(--surface); min-height: 100vh; display: flex; flex-direction: row;">
+
+<!-- Sidebar Navigation -->
+<aside th:replace="~{fragments/layout :: admin-sidebar('loaihang')}"></aside>
+
+<!-- Main Workspace Panel -->
+<main style="flex: 1; padding: 40px; display: flex; flex-direction: column; gap: 0;">
+    
+    <!-- Top Search & Profile Header matching Figma exactly -->
+    <div th:replace="~{fragments/layout :: admin-header('Search analytics, categories, or groups...', 'admin-search-input', null)}"></div>
+
+    <!-- Title & Action Buttons -->
+    <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 28px;">
+        <div>
+            <div style="font-size: 11px; color: var(--outline); font-weight: 700; letter-spacing: 0.03em; text-transform: uppercase; margin-bottom: 6px;">Trang chủ &gt; Danh mục</div>
+            <h1 style="font-size: 28px; font-weight: 800; color: var(--primary); margin: 0;">Quản lý Loại hàng</h1>
+        </div>
+        <div style="display: flex; gap: 12px;">
+            <a class="btn btn-primary" th:href="@{/loai-hang/admin/form}" style="padding: 10px 20px; font-size: 13px; font-weight: 700; display: inline-flex; align-items: center; gap: 8px; background-color: #00687a; border: none; color: white;">
+                <i class="bi bi-plus-lg"></i> Thêm loại hàng mới
+            </a>
+        </div>
+    </div>
+
+    <!-- Category list table matching Figma exactly -->
+    <div class="table-responsive" style="margin-bottom: 0; box-shadow: var(--shadow-sm); border-radius: var(--radius-lg); border: 1px solid var(--surface-container); overflow: hidden; background-color: var(--surface-container-lowest); max-width: 900px;">
+        <table style="width: 100%; border-collapse: separate; border-spacing: 0;">
+            <thead>
+                <tr style="background-color: var(--surface-container-low);">
+                    <th style="width: 160px; text-align: center; padding: 16px 20px; font-size: 11px; text-transform: uppercase; color: var(--outline); font-weight: 700; border-bottom: 1.5px solid var(--surface-container);">Mã danh mục</th>
+                    <th style="padding: 16px 20px; font-size: 11px; text-transform: uppercase; color: var(--outline); font-weight: 700; border-bottom: 1.5px solid var(--surface-container);">Tên danh mục</th>
+                    <th style="width: 160px; text-align: center; padding: 16px 20px; font-size: 11px; text-transform: uppercase; color: var(--outline); font-weight: 700; border-bottom: 1.5px solid var(--surface-container);">Biểu tượng minh họa</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="lh : ${loaiHangs}">
+                    <!-- ID -->
+                    <td class="label-mono" style="text-align: center; font-weight: 700; color: var(--outline); padding: 18px 20px; border-bottom: 1px solid var(--surface-container-low); vertical-align: middle;" th:text="'LH-' + ${lh.id}">
+                        LH-1
+                    </td>
+                    
+                    <!-- Title -->
+                    <td style="padding: 18px 20px; border-bottom: 1px solid var(--surface-container-low); font-weight: 700; color: var(--primary); font-size: 14.5px; vertical-align: middle;" th:text="${lh.tenLoai}">
+                        Điện thoại
+                    </td>
+                    
+                    <!-- Icon placeholder / demonstration -->
+                    <td style="padding: 18px 20px; border-bottom: 1px solid var(--surface-container-low); text-align: center; vertical-align: middle;">
+                        <span style="font-size: 20px; color: var(--secondary);">
+                            <i th:if="${lh.tenLoai == 'iPhone' || lh.tenLoai == 'Điện thoại Android' || lh.tenLoai == 'Điện thoại'}" class="bi bi-phone"></i>
+                            <i th:if="${lh.tenLoai == 'Máy tính bảng'}" class="bi bi-tablet"></i>
+                            <i th:if="${lh.tenLoai == 'Đồng hồ thông minh'}" class="bi bi-smartwatch"></i>
+                            <i th:if="${lh.tenLoai == 'Tai nghe Bluetooth' || lh.tenLoai == 'Tai nghe'}" class="bi bi-earbuds"></i>
+                            <i th:if="${lh.tenLoai == 'Phụ kiện điện thoại' || lh.tenLoai == 'Phụ kiện'}" class="bi bi-usb-plug"></i>
+                            <i th:if="${lh.tenLoai != 'iPhone' and lh.tenLoai != 'Điện thoại Android' and lh.tenLoai != 'Điện thoại' and lh.tenLoai != 'Máy tính bảng' and lh.tenLoai != 'Đồng hồ thông minh' and lh.tenLoai != 'Tai nghe Bluetooth' and lh.tenLoai != 'Tai nghe' and lh.tenLoai != 'Phụ kiện điện thoại' and lh.tenLoai != 'Phụ kiện'}" class="bi bi-box"></i>
+                        </span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+</main>
+
+</body>
+</html>

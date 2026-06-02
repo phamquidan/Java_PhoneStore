@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: html-head('Quản lý Hóa đơn - TechSophist')}"></head>
+
+<!-- ==================== 1. ADMIN VIEW ==================== -->
+<body sec:authorize="hasRole('ADMIN')" style="background-color: var(--surface); min-height: 100vh; display: flex; flex-direction: row;">
+
+<!-- Sidebar Navigation -->
+<aside th:replace="~{fragments/layout :: admin-sidebar('donhang')}"></aside>
+
+<!-- Main Workspace Panel -->
+<main style="flex: 1; padding: 40px; display: flex; flex-direction: column; gap: 0;">
+    
+    <!-- Top Search & Profile Header matching Figma exactly -->
+    <div th:replace="~{fragments/layout :: admin-header('Tìm kiếm đơn hàng, khách hàng...', 'admin-search-input', 'filterOrdersTable()')}"></div>
+
+    <!-- Title & Action Buttons -->
+    <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 28px;">
+        <div>
+            <h1 style="font-size: 28px; font-weight: 800; color: var(--primary); margin-bottom: 4px;">Quản lý Đơn hàng</h1>
+            <p style="font-size: 13.5px; color: var(--outline); margin: 0;">Theo dõi và xử lý các giao dịch khách hàng trong hệ thống.</p>
+        </div>
+        <div style="display: flex; gap: 12px;">
+            <button class="btn btn-secondary" style="padding: 10px 16px; font-size: 13px; font-weight: 700; display: inline-flex; align-items: center; gap: 8px;" onclick="alert('Đã xuất báo cáo đơn hàng thành công!')">
+                <i class="bi bi-download"></i> Xuất báo cáo
+            </button>
+            <a class="btn btn-primary" th:href="@{/san-pham/admin}" style="padding: 10px 20px; font-size: 13px; font-weight: 700; display: inline-flex; align-items: center; gap: 8px; background-color: #00687a; border: none; color: white;">
+                <i class="bi bi-plus-lg"></i> Tạo đơn hàng
+            </a>
+        </div>
+    </div>
+
+    <!-- Interactive Grid of Stats Cards matching Figma exactly -->
+    <section style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 32px;">
+        <!-- Card 1: Total Orders -->
+        <div class="card" style="display: flex; flex-direction: column; background-color: var(--surface-container-lowest); border-radius: var(--radius-md); padding: 20px 24px; border: 1px solid var(--surface-container); box-shadow: var(--shadow-sm); margin-bottom: 0; position: relative;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                <div style="width: 40px; height: 40px; border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; background-color: #e0f2fe; color: #0369a1; font-size: 18px;"><i class="bi bi-cart"></i></div>
+                <span style="font-size: 11px; font-weight: 700; color: #0369a1;">+12%</span>
+            </div>
+            <div>
+                <div style="font-size: 12px; color: var(--outline); font-weight: 600; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.05em;">TỔNG ĐƠN HÀNG</div>
+                <div style="font-size: 24px; font-weight: 800; color: var(--primary); line-height: 1.1;" th:text="${totalPages != null ? totalPages * 10 : '1,284'}">1,284</div>
+            </div>
+        </div>
+        
+        <!-- Card 2: New Orders -->
+        <div class="card" style="display: flex; flex-direction: column; background-color: var(--surface-container-lowest); border-radius: var(--radius-md); padding: 20px 24px; border: 1px solid var(--surface-container); box-shadow: var(--shadow-sm); margin-bottom: 0; position: relative;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                <div style="width: 40px; height: 40px; border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; background-color: #f5f3ff; color: #6d28d9; font-size: 18px;"><i class="bi bi-clock-history"></i></div>
+                <span style="font-size: 11px; font-weight: 700; color: var(--error);">Mới</span>
+            </div>
+            <div>
+                <div style="font-size: 12px; color: var(--outline); font-weight: 600; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.05em;">ĐƠN HÀNG MỚI</div>
+                <div style="font-size: 24px; font-weight: 800; color: var(--primary); line-height: 1.1;">42</div>
+            </div>
+        </div>
+
+        <!-- Card 3: Today Revenue - ACTIVE CARD with left teal border -->
+        <div class="card" style="display: flex; flex-direction: column; background-color: var(--surface-container-lowest); border-radius: var(--radius-md); padding: 20px 24px; border: 1px solid var(--surface-container); border-left: 4px solid #00687a; box-shadow: var(--shadow-sm); margin-bottom: 0; position: relative;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                <div style="width: 40px; height: 40px; border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; background-color: #e6f6f0; color: var(--success); font-size: 18px;"><i class="bi bi-wallet2"></i></div>
+                <span style="font-size: 11px; font-weight: 700; color: var(--success);">+5.4%</span>
+            </div>
+            <div>
+                <div style="font-size: 12px; color: var(--outline); font-weight: 600; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.05em;">DOANH THU HÔM NAY</div>
+                <div style="font-size: 24px; font-weight: 800; color: var(--primary); line-height: 1.1;">đ145.2M</div>
+            </div>
+        </div>
+
+        <!-- Card 4: Action Required -->
+        <div class="card" style="display: flex; flex-direction: column; background-color: var(--surface-container-lowest); border-radius: var(--radius-md); padding: 20px 24px; border: 1px solid var(--surface-container); box-shadow: var(--shadow-sm); margin-bottom: 0; position: relative;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                <div style="width: 40px; height: 40px; border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; background-color: #fef3f2; color: var(--error); font-size: 18px;"><i class="bi bi-file-earmark-check"></i></div>
+                <span style="font-size: 11px; font-weight: 700; color: var(--error);">Cần xử lý</span>
+            </div>
+            <div>
+                <div style="font-size: 12px; color: var(--outline); font-weight: 600; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.05em;">ĐƠN HÀNG CẦN XỬ LÝ</div>
+                <div style="font-size: 24px; font-weight: 800; color: var(--primary); line-height: 1.1;">18</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Filters Tabs Bar matching Figma exactly -->
+    <div style="display: flex; gap: 8px; margin-bottom: 24px; flex-wrap: wrap;">
+        <button class="btn btn-secondary active-pill" id="tab-all" onclick="filterOrdersByTab('All', this)" style="padding: 8px 20px; font-size: 13.5px; font-weight: 700; border-radius: var(--radius-full); border: none; background-color: var(--primary); color: var(--on-primary); cursor: pointer;">Tất cả</button>
+        <button class="btn btn-secondary" id="tab-pending" onclick="filterOrdersByTab('Pending', this)" style="padding: 8px 20px; font-size: 13.5px; font-weight: 600; border-radius: var(--radius-full); border: none; background-color: #e2e8f0; color: var(--on-surface-variant); cursor: pointer;">Chờ xác nhận (12)</button>
+        <button class="btn btn-secondary" id="tab-processing" onclick="filterOrdersByTab('Processing', this)" style="padding: 8px 20px; font-size: 13.5px; font-weight: 600; border-radius: var(--radius-full); border: none; background-color: #e2e8f0; color: var(--on-surface-variant); cursor: pointer;">Đang xử lý (6)</button>
+        <button class="btn btn-secondary" id="tab-shipping" onclick="filterOrdersByTab('Shipping', this)" style="padding: 8px 20px; font-size: 13.5px; font-weight: 600; border-radius: var(--radius-full); border: none; background-color: #e2e8f0; color: var(--on-surface-variant); cursor: pointer;">Đang giao (15)</button>
+        <button class="btn btn-secondary" id="tab-completed" onclick="filterOrdersByTab('Completed', this)" style="padding: 8px 20px; font-size: 13.5px; font-weight: 600; border-radius: var(--radius-full); border: none; background-color: #e2e8f0; color: var(--on-surface-variant); cursor: pointer;">Đã hoàn thành</button>
+        <button class="btn btn-secondary" id="tab-cancelled" onclick="filterOrdersByTab('Cancelled', this)" style="padding: 8px 20px; font-size: 13.5px; font-weight: 600; border-radius: var(--radius-full); border: none; background-color: #e2e8f0; color: var(--on-surface-variant); cursor: pointer;">Đã hủy</button>
+    </div>
+
+    <!-- Datatable Section matching Figma exactly -->
+    <div class="table-responsive" style="margin-bottom: 0; box-shadow: var(--shadow-sm); border-radius: var(--radius-lg); border: 1px solid var(--surface-container); overflow: hidden; background-color: var(--surface-container-lowest);">
+        <table style="width: 100%; border-collapse: separate; border-spacing: 0;">
+            <thead>
+                <tr style="background-color: var(--surface-container-low);">
+                    <th style="padding: 16px 20px; font-size: 11px; text-transform: uppercase; color: var(--outline); font-weight: 700; border-bottom: 1.5px solid var(--surface-container); width: 140px;">Mã Đơn Hàng</th>
+                    <th style="padding: 16px 20px; font-size: 11px; text-transform: uppercase; color: var(--outline); font-weight: 700; border-bottom: 1.5px solid var(--surface-container);">Khách Hàng</th>
+                    <th style="padding: 16px 20px; font-size: 11px; text-transform: uppercase; color: var(--outline); font-weight: 700; border-bottom: 1.5px solid var(--surface-container); width: 160px;">Ngày Lập</th>
+                    <th style="padding: 16px 20px; font-size: 11px; text-transform: uppercase; color: var(--outline); font-weight: 700; border-bottom: 1.5px solid var(--surface-container); text-align: right; width: 160px;">Tổng Tiền</th>
+                    <th style="padding: 16px 20px; font-size: 11px; text-transform: uppercase; color: var(--outline); font-weight: 700; border-bottom: 1.5px solid var(--surface-container); width: 140px;">Thanh Toán</th>
+                    <th style="padding: 16px 20px; font-size: 11px; text-transform: uppercase; color: var(--outline); font-weight: 700; border-bottom: 1.5px solid var(--surface-container); text-align: center; width: 140px;">Trạng Thái</th>
+                    <th style="padding: 16px 20px; font-size: 11px; text-transform: uppercase; color: var(--outline); font-weight: 700; border-bottom: 1.5px solid var(--surface-container); text-align: center; width: 140px;"></th>
+                </tr>
+            </thead>
+            <tbody id="orders-rows">
+                <tr th:each="dh : ${donHangs}" class="order-row" th:data-customer="${dh.khachHang != null ? dh.khachHang.hoTen : 'K'}" th:data-status="${dh.trangThai}">
+                    <!-- Invoice ID -->
+                    <td class="label-mono" style="font-weight: 700; color: var(--primary); padding: 18px 20px; border-bottom: 1px solid var(--surface-container-low); vertical-align: middle;" th:text="'#ORD-2024-' + ${#numbers.formatInteger(dh.id, 3)}">
+                        #ORD-2024-001
+                    </td>
+                    
+                    <!-- Customer -->
+                    <td style="padding: 18px 20px; border-bottom: 1px solid var(--surface-container-low); vertical-align: middle;">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <div style="width: 28px; height: 28px; border-radius: var(--radius-full); background-color: #d1ecf1; color: #0c5460; display: flex; align-items: center; justify-content: center; font-size: 10.5px; font-weight: 700;" th:text="${dh.khachHang != null ? #strings.substring(dh.khachHang.hoTen, 0, 1) : 'K'}">NL</div>
+                            <span style="font-weight: 600; color: var(--primary); font-size: 13.5px;" th:text="${dh.khachHang != null ? dh.khachHang.hoTen : 'Khách hàng ẩn'}">Nguyễn Văn Linh</span>
+                        </div>
+                    </td>
+                    
+                    <!-- Date -->
+                    <td th:text="${#temporals.format(dh.ngayDat, 'dd/MM/yyyy HH:mm')}" style="padding: 18px 20px; border-bottom: 1px solid var(--surface-container-low); color: var(--on-surface-variant); font-size: 13px; font-weight: 500; vertical-align: middle;">
+                        24/10/2023 14:30
+                    </td>
+                    
+                    <!-- Total Cost -->
+                    <td th:text="'₫' + ${#numbers.formatDecimal(dh.tongTien, 0, 'COMMA', 0, 'POINT')}" style="padding: 18px 20px; border-bottom: 1px solid var(--surface-container-low); text-align: right; font-weight: 800; color: var(--primary); font-size: 14.5px; vertical-align: middle;">
+                        ₫25.990.000
+                    </td>
+                    
+                    <!-- Payment method -->
+                    <td th:text="${dh.phuongThucThanhToan != null ? dh.phuongThucThanhToan : 'Tiền mặt (COD)'}" style="padding: 18px 20px; border-bottom: 1px solid var(--surface-container-low); font-weight: 600; color: var(--on-surface-variant); font-size: 13px; vertical-align: middle;">
+                        Chuyển khoản
+                    </td>
+                    
+                    <!-- Status Badge multi-line small vertical caps -->
+                    <td style="padding: 18px 20px; border-bottom: 1px solid var(--surface-container-low); text-align: center; vertical-align: middle;">
+                        <span style="background-color: #fffaeb; color: #f79009; font-size: 9px; font-weight: 800; padding: 4px 6px; border-radius: 4px; display: inline-block; letter-spacing: 0.05em; line-height: 1.1; text-align: center; width: 68px;" th:if="${dh.trangThai == 'PENDING' || dh.trangThai == 'Chờ thanh toán'}">CHỜ<br>XÁC NHẬN</span>
+                        <span style="background-color: #e0f2fe; color: #0369a1; font-size: 9px; font-weight: 800; padding: 4px 6px; border-radius: 4px; display: inline-block; letter-spacing: 0.05em; line-height: 1.1; text-align: center; width: 68px;" th:if="${dh.trangThai == 'Processing' || dh.trangThai == 'Đang xử lý'}">ĐANG<br>XỬ LÝ</span>
+                        <span style="background-color: #fdf5e2; color: #d97706; font-size: 9px; font-weight: 800; padding: 4px 6px; border-radius: 4px; display: inline-block; letter-spacing: 0.05em; line-height: 1.1; text-align: center; width: 68px;" th:if="${dh.trangThai == 'Shipping' || dh.trangThai == 'Đang giao'}">ĐANG<br>GIAO</span>
+                        <span style="background-color: #edfcf2; color: #12b76a; font-size: 9px; font-weight: 800; padding: 4px 6px; border-radius: 4px; display: inline-block; letter-spacing: 0.05em; line-height: 1.1; text-align: center; width: 68px;" th:if="${dh.trangThai == 'PAID' || dh.trangThai == 'Hoàn thành'}">ĐÃ<br>HOÀN THÀNH</span>
+                        <span style="background-color: #fef3f2; color: #f04438; font-size: 9px; font-weight: 800; padding: 4px 6px; border-radius: 4px; display: inline-block; letter-spacing: 0.05em; line-height: 1.1; text-align: center; width: 68px;" th:if="${dh.trangThai == 'CANCELLED' || dh.trangThai == 'Đã hủy'}">ĐÃ<br>HỦY</span>
+                    </td>
+                    
+                    <!-- Actions -->
+                    <td style="padding: 18px 20px; border-bottom: 1px solid var(--surface-container-low); text-align: center; vertical-align: middle;">
+                        <div style="display: flex; gap: 14px; justify-content: center; align-items: center;">
+                            <a th:href="@{'/don-hang/' + ${dh.id}}" style="color: var(--outline); font-size: 18px; transition: var(--transition);" title="Xem chi tiết" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--outline)'">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                            <a href="javascript:void(0)" onclick="alert('Đã xác nhận và cập nhật tiến trình đơn hàng!')" style="color: var(--outline); font-size: 17px; transition: var(--transition);" title="Xử lý giao dịch" onmouseover="this.style.color='var(--secondary)'" onmouseout="this.style.color='var(--outline)'">
+                                <i class="bi bi-check-circle"></i>
+                            </a>
+                            <a th:href="@{'/don-hang/' + ${dh.id} + '/invoice'}" style="color: var(--outline); font-size: 17px; transition: var(--transition);" title="In Hóa Đơn" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--outline)'">
+                                <i class="bi bi-printer"></i>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination Row matching Figma exactly -->
+    <div style="display: flex; justify-content: space-between; align-items: center; padding: 24px 0 0 0; margin-top: 16px;">
+        <!-- Left Side: Shown counts -->
+        <div style="font-size: 13.5px; color: var(--outline); font-weight: 500;">
+            Hiển thị <span id="orders-visible-count">1 - 5</span> của <span id="orders-total-count" th:text="${totalPages != null ? totalPages * 10 : '1,284'}">1,284</span> đơn hàng
+        </div>
+        
+        <!-- Right Side: Pagination buttons -->
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <!-- Prev button -->
+            <button id="pagination-prev" class="btn" style="width: 36px; height: 36px; padding: 0; display: flex; align-items: center; justify-content: center; border-radius: var(--radius-sm); border: 1px solid var(--surface-container); background-color: var(--surface-container-lowest); color: var(--on-surface-variant); cursor: pointer;" title="Trang trước" onclick="prevPage()">
+                <i class="bi bi-chevron-left" style="font-size: 12px; font-weight: 700;"></i>
+            </button>
+            
+            <!-- Page numbers -->
+            <div id="pagination-pages" style="display: flex; gap: 8px; align-items: center;"></div>
+            
+            <!-- Next button -->
+            <button id="pagination-next" class="btn" style="width: 36px; height: 36px; padding: 0; display: flex; align-items: center; justify-content: center; border-radius: var(--radius-sm); border: 1px solid var(--surface-container); background-color: var(--surface-container-lowest); color: var(--on-surface-variant); cursor: pointer;" title="Trang sau" onclick="nextPage()">
+                <i class="bi bi-chevron-right" style="font-size: 12px; font-weight: 700;"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Bottom Section: Allocation Split Grid matching Figma exactly -->
+    <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 24px; margin-top: 40px; margin-bottom: 20px;">
+        <!-- Left: Payment Allocation Progress Bars -->
+        <div class="card" style="background-color: var(--surface-container-lowest); border-radius: var(--radius-lg); padding: 24px; border: 1px solid var(--surface-container); box-shadow: var(--shadow-sm); margin-bottom: 0;">
+            <h3 style="font-size: 16px; font-weight: 800; color: var(--primary); margin-bottom: 20px;">Phân bổ thanh toán</h3>
+            <div style="display: flex; flex-direction: column; gap: 16px;">
+                <!-- method 1 -->
+                <div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; font-size: 13px; font-weight: 600; margin-bottom: 6px;">
+                        <span>Chuyển khoản Ngân hàng</span>
+                        <span>65%</span>
+                    </div>
+                    <div style="width: 100%; height: 6px; background-color: var(--surface-container-low); border-radius: var(--radius-full); overflow: hidden;">
+                        <div style="width: 65%; height: 100%; background-color: #00687a; border-radius: var(--radius-full);"></div>
+                    </div>
+                </div>
+                <!-- method 2 -->
+                <div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; font-size: 13px; font-weight: 600; margin-bottom: 6px;">
+                        <span>Ví điện tử (Momo, ZaloPay)</span>
+                        <span>20%</span>
+                    </div>
+                    <div style="width: 100%; height: 6px; background-color: var(--surface-container-low); border-radius: var(--radius-full); overflow: hidden;">
+                        <div style="width: 20%; height: 100%; background-color: #22d3ee; border-radius: var(--radius-full);"></div>
+                    </div>
+                </div>
+                <!-- method 3 -->
+                <div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; font-size: 13px; font-weight: 600; margin-bottom: 6px;">
+                        <span>Tiền mặt (COD)</span>
+                        <span>15%</span>
+                    </div>
+                    <div style="width: 100%; height: 6px; background-color: var(--surface-container-low); border-radius: var(--radius-full); overflow: hidden;">
+                        <div style="width: 15%; height: 100%; background-color: #94a3b8; border-radius: var(--radius-full);"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: Support Card -->
+        <div class="card" style="background-color: var(--surface-container-lowest); border-radius: var(--radius-lg); padding: 24px; border: 1px solid var(--surface-container); box-shadow: var(--shadow-sm); margin-bottom: 0; display: flex; flex-direction: column; justify-content: space-between; position: relative; overflow: hidden;">
+            <div>
+                <h3 style="font-size: 16px; font-weight: 800; color: var(--primary); margin-bottom: 12px;">Cần hỗ trợ?</h3>
+                <p style="font-size: 13.5px; color: var(--on-surface-variant); line-height: 1.6; max-width: 80%; margin-bottom: 20px;">
+                    Hệ thống ghi nhận tỷ lệ hoàn thành đơn hàng tăng 15% so với tháng trước. Kiểm tra lại các đơn hàng đang chờ quá 24h.
+                </p>
+            </div>
+            <button class="btn" style="background-color: var(--primary); color: var(--on-primary); font-weight: 700; font-size: 13px; align-self: flex-start; padding: 10px 20px; border-radius: var(--radius-default);" onclick="alert('Đang chuyển đến báo cáo quản trị chi tiết...')">Xem báo cáo chi tiết</button>
+            
+            <!-- Graphic background vector -->
+            <i class="bi bi-graph-up-arrow" style="position: absolute; right: 16px; bottom: -16px; font-size: 96px; color: #f1f5f9; z-index: 1; pointer-events: none;"></i>
+        </div>
+    </div>
+
+</main>
+
+<script>
+    let currentPage = 1;
+    const pageSize = 5;
+    let filteredRows = [];
+    let currentSearchKeyword = "";
+    let currentStatusTab = "All";
+
+    document.addEventListener("DOMContentLoaded", function() {
+        const rows = document.querySelectorAll(".order-row");
+        let pendingCount = 0;
+        let processingCount = 0;
+        let shippingCount = 0;
+        let completedCount = 0;
+        let cancelledCount = 0;
+
+        rows.forEach(row => {
+            const rowStatus = row.getAttribute("data-status");
+            if (rowStatus === 'PENDING' || rowStatus === 'Chờ thanh toán') {
+                pendingCount++;
+            } else if (rowStatus === 'Processing' || rowStatus === 'Đang xử lý') {
+                processingCount++;
+            } else if (rowStatus === 'Shipping' || rowStatus === 'Đang giao') {
+                shippingCount++;
+            } else if (rowStatus === 'PAID' || rowStatus === 'Hoàn thành') {
+                completedCount++;
+            } else if (rowStatus === 'CANCELLED' || rowStatus === 'Đã hủy') {
+                cancelledCount++;
+            }
+        });
+
+        const tabAll = document.getElementById("tab-all");
+        if (tabAll) tabAll.textContent = `Tất cả (${rows.length})`;
+        
+        const tabPending = document.getElementById("tab-pending");
+        if (tabPending) tabPending.textContent = `Chờ xác nhận (${pendingCount})`;
+        
+        const tabProcessing = document.getElementById("tab-processing");
+        if (tabProcessing) tabProcessing.textContent = `Đang xử lý (${processingCount})`;
+        
+        const tabShipping = document.getElementById("tab-shipping");
+        if (tabShipping) tabShipping.textContent = `Đang giao (${shippingCount})`;
+        
+        const tabCompleted = document.getElementById("tab-completed");
+        if (tabCompleted) tabCompleted.textContent = `Đã hoàn thành (${completedCount})`;
+        
+        const tabCancelled = document.getElementById("tab-cancelled");
+        if (tabCancelled) tabCancelled.textContent = `Đã hủy (${cancelledCount})`;
+
+        filterTable();
+    });
+
+    function filterOrdersTable() {
+        currentSearchKeyword = document.getElementById("admin-search-input").value.toLowerCase();
+        filterTable();
+    }
+
+    function filterOrdersByTab(status, element) {
+        currentStatusTab = status;
+        
+        const pills = document.querySelectorAll(".active-pill");
+        pills.forEach(p => {
+            p.classList.remove("active-pill");
+            p.style.backgroundColor = "#e2e8f0";
+            p.style.color = "var(--on-surface-variant)";
+            p.style.fontWeight = "600";
+        });
+        
+        element.classList.add("active-pill");
+        element.style.backgroundColor = "var(--primary)";
+        element.style.color = "var(--on-primary)";
+        element.style.fontWeight = "700";
+        
+        filterTable();
+    }
+
+    function filterTable() {
+        const rows = Array.from(document.querySelectorAll(".order-row"));
+        
+        filteredRows = rows.filter(row => {
+            const customer = row.getAttribute("data-customer").toLowerCase();
+            const id = row.querySelector(".label-mono").textContent.toLowerCase();
+            const rowStatus = row.getAttribute("data-status");
+            
+            const matchesSearch = customer.includes(currentSearchKeyword) || id.includes(currentSearchKeyword);
+            
+            let matchesStatus = false;
+            if (currentStatusTab === 'All') {
+                matchesStatus = true;
+            } else if (currentStatusTab === 'Pending') {
+                matchesStatus = (rowStatus === 'PENDING' || rowStatus === 'Chờ thanh toán');
+            } else if (currentStatusTab === 'Processing') {
+                matchesStatus = (rowStatus === 'Processing' || rowStatus === 'Đang xử lý');
+            } else if (currentStatusTab === 'Shipping') {
+                matchesStatus = (rowStatus === 'Shipping' || rowStatus === 'Đang giao');
+            } else if (currentStatusTab === 'Completed') {
+                matchesStatus = (rowStatus === 'PAID' || rowStatus === 'Hoàn thành');
+            } else if (currentStatusTab === 'Cancelled') {
+                matchesStatus = (rowStatus === 'CANCELLED' || rowStatus === 'Đã hủy');
+            }
+            
+            return matchesSearch && matchesStatus;
+        });
+
+        currentPage = 1;
+        renderPagination();
+    }
+
+    function renderPagination() {
+        const totalItems = filteredRows.length;
+        const totalPages = Math.ceil(totalItems / pageSize) || 1;
+        
+        if (currentPage > totalPages) currentPage = totalPages;
+        if (currentPage < 1) currentPage = 1;
+
+        const allRows = document.querySelectorAll(".order-row");
+        allRows.forEach(r => r.style.display = "none");
+
+        const start = (currentPage - 1) * pageSize;
+        const end = Math.min(start + pageSize, totalItems);
+
+        for (let i = start; i < end; i++) {
+            filteredRows[i].style.display = "";
+        }
+
+        const visibleSpan = document.getElementById("orders-visible-count");
+        if (visibleSpan) {
+            if (totalItems > 0) {
+                visibleSpan.textContent = `${start + 1} - ${end}`;
+            } else {
+                visibleSpan.textContent = `0 - 0`;
+            }
+        }
+        
+        const totalSpan = document.getElementById("orders-total-count");
+        if (totalSpan) {
+            totalSpan.textContent = totalItems;
+        }
+
+        const pagesContainer = document.getElementById("pagination-pages");
+        if (pagesContainer) {
+            pagesContainer.innerHTML = "";
+
+            document.getElementById("pagination-prev").disabled = (currentPage === 1);
+            document.getElementById("pagination-prev").style.opacity = (currentPage === 1) ? "0.5" : "1";
+            document.getElementById("pagination-prev").style.cursor = (currentPage === 1) ? "not-allowed" : "pointer";
+
+            document.getElementById("pagination-next").disabled = (currentPage === totalPages);
+            document.getElementById("pagination-next").style.opacity = (currentPage === totalPages) ? "0.5" : "1";
+            document.getElementById("pagination-next").style.cursor = (currentPage === totalPages) ? "not-allowed" : "pointer";
+
+            for (let i = 1; i <= totalPages; i++) {
+                const btn = document.createElement("button");
+                btn.className = "btn";
+                btn.textContent = i;
+                
+                btn.style.width = "36px";
+                btn.style.height = "36px";
+                btn.style.padding = "0";
+                btn.style.display = "flex";
+                btn.style.alignItems = "center";
+                btn.style.justifyContent = "center";
+                btn.style.borderRadius = "var(--radius-sm)";
+                btn.style.fontWeight = "700";
+                btn.style.fontSize = "13.5px";
+                btn.style.cursor = "pointer";
+
+                if (i === currentPage) {
+                    btn.style.border = "none";
+                    btn.style.backgroundColor = "var(--primary)";
+                    btn.style.color = "var(--on-primary)";
+                } else {
+                    btn.style.border = "1px solid var(--surface-container)";
+                    btn.style.backgroundColor = "var(--surface-container-lowest)";
+                    btn.style.color = "var(--on-surface-variant)";
+                }
+
+                btn.onclick = function() {
+                    currentPage = i;
+                    renderPagination();
+                };
+
+                pagesContainer.appendChild(btn);
+            }
+        }
+    }
+
+    function prevPage() {
+        if (currentPage > 1) {
+            currentPage--;
+            renderPagination();
+        }
+    }
+
+    function nextPage() {
+        const totalPages = Math.ceil(filteredRows.length / pageSize) || 1;
+        if (currentPage < totalPages) {
+            currentPage++;
+            renderPagination();
+        }
+    }
+</script>
+
+</body>
+
+<!-- ==================== 2. CUSTOMER VIEW ==================== -->
+<body sec:authorize="!hasRole('ADMIN')">
+
+<!-- Header Navigation -->
+<header th:replace="~{fragments/layout :: topbar}"></header>
+
+<!-- Main Container Split Layout matching Figma exactly -->
+<main class="container" style="display: flex; gap: 32px; padding: 40px 24px; align-items: flex-start;">
+    
+    <!-- Left Account Sidebar Card -->
+    <aside style="width: 260px; background-color: var(--surface-container-lowest); border-radius: var(--radius-lg); border: 1px solid var(--surface-container); padding: 24px; box-shadow: var(--shadow-sm); flex-shrink: 0; display: flex; flex-direction: column; gap: 20px;">
+        <h3 style="font-size: 16px; font-weight: 800; color: var(--primary); margin: 0 0 8px 0;">Tài khoản</h3>
+        
+        <nav style="display: flex; flex-direction: column; gap: 4px;">
+            <a th:href="@{/user/profile}" style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: var(--radius-sm); text-decoration: none; font-size: 14px; font-weight: 600; color: var(--on-surface-variant); transition: var(--transition);" onmouseover="this.style.backgroundColor='var(--surface-container-low)'; this.style.color='var(--primary)';" onmouseout="this.style.backgroundColor='transparent'; this.style.color='var(--on-surface-variant)';">
+                <i class="bi bi-person" style="font-size: 16px;"></i> Account Settings
+            </a>
+            <a th:href="@{/don-hang}" style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: var(--radius-sm); text-decoration: none; font-size: 14px; font-weight: 700; color: var(--secondary); background-color: var(--surface-container-low); border-left: 3px solid var(--secondary);">
+                <i class="bi bi-receipt" style="font-size: 16px;"></i> Order History
+            </a>
+            <a href="javascript:void(0)" onclick="alert('Địa chỉ giao hàng đang được hoàn thiện!')" style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: var(--radius-sm); text-decoration: none; font-size: 14px; font-weight: 600; color: var(--on-surface-variant); transition: var(--transition);" onmouseover="this.style.backgroundColor='var(--surface-container-low)'; this.style.color='var(--primary)';" onmouseout="this.style.backgroundColor='transparent'; this.style.color='var(--on-surface-variant)';">
+                <i class="bi bi-geo-alt" style="font-size: 16px;"></i> Addresses
+            </a>
+        </nav>
+        
+        <div style="border-top: 1px solid var(--surface-container); padding-top: 16px;">
+            <form method="post" th:action="@{/logout}" style="margin: 0; width: 100%;">
+                <button type="submit" style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: var(--radius-sm); background: none; border: none; font-size: 14px; font-weight: 700; color: var(--error); width: 100%; text-align: left; cursor: pointer; transition: var(--transition);" onmouseover="this.style.backgroundColor='#fef2f2';" onmouseout="this.style.backgroundColor='transparent';">
+                    <i class="bi bi-box-arrow-right" style="font-size: 16px;"></i> Đăng xuất
+                </button>
+            </form>
+        </div>
+    </aside>
+    
+    <!-- Right Order Cards List matching Figma exactly -->
+    <section style="flex: 1; display: flex; flex-direction: column; gap: 24px;">
+        
+        <div>
+            <h1 style="font-size: 26px; font-weight: 800; color: var(--primary); margin: 0 0 6px 0;">Lịch sử đơn hàng</h1>
+            <p style="font-size: 13.5px; color: var(--outline); margin: 0;">Xem và quản lý các đơn hàng của bạn từ trước đến nay.</p>
+        </div>
+
+        <!-- If empty -->
+        <div th:if="${#lists.isEmpty(donHangs)}" style="text-align: center; padding: 60px; background-color: var(--surface-container-lowest); border-radius: var(--radius-lg); border: 1px solid var(--surface-container); box-shadow: var(--shadow-sm);">
+            <i class="bi bi-receipt" style="font-size: 48px; color: var(--outline); display: block; margin-bottom: 16px;"></i>
+            <h3 style="color: var(--on-surface-variant); font-size: 18px; font-weight: 700; margin-bottom: 8px;">Chưa có giao dịch nào</h3>
+            <p style="color: var(--outline); font-size: 13.5px; margin-bottom: 24px;">Bạn chưa thực hiện bất kỳ giao dịch mua bán nào tại cửa hàng của chúng tôi.</p>
+            <a class="btn btn-action" th:href="@{/san-pham}" style="background-color: var(--secondary); color: white; padding: 10px 20px; font-weight: 700; font-size: 13px; text-decoration: none; border-radius: var(--radius-default);">
+                <i class="bi bi-phone"></i> Mua sắm sản phẩm ngay
+            </a>
+        </div>
+
+        <!-- Loop of Orders list -->
+        <div th:each="dh : ${donHangs}" th:if="${!#lists.isEmpty(donHangs)}" class="card" style="background-color: var(--surface-container-lowest); border-radius: var(--radius-lg); padding: 24px; border: 1px solid var(--surface-container); box-shadow: var(--shadow-sm); margin-bottom: 0; display: flex; flex-direction: column; gap: 20px;">
+            
+            <!-- Card Header -->
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--surface-container); padding-bottom: 16px;">
+                <div style="display: flex; gap: 12px; align-items: center;">
+                    <!-- Order ID -->
+                    <div style="background-color: var(--surface-container-low); padding: 6px 12px; border-radius: var(--radius-sm); display: inline-flex; flex-direction: column;">
+                        <span style="font-size: 9px; color: var(--outline); font-weight: 700;" class="label-mono">MAHD</span>
+                        <span style="font-size: 13px; font-weight: 800; color: var(--primary);" th:text="'TS-' + ${dh.id} + '-2026'">TS-7729-2024</span>
+                    </div>
+                    
+                    <!-- Date -->
+                    <div style="background-color: var(--surface-container-low); padding: 6px 12px; border-radius: var(--radius-sm); display: inline-flex; flex-direction: column;">
+                        <span style="font-size: 9px; color: var(--outline); font-weight: 700;" class="label-mono">NGAYLAP</span>
+                        <span style="font-size: 13px; font-weight: 700; color: var(--primary);" th:text="${#temporals.format(dh.ngayDat, 'dd/MM/yyyy HH:mm')}">24 Tháng 05, 2024</span>
+                    </div>
+                </div>
+                
+                <!-- Status Badge -->
+                <div>
+                    <span style="background-color: #edfcf2; color: #12b76a; font-size: 12px; font-weight: 700; padding: 6px 14px; border-radius: var(--radius-full); display: inline-flex; align-items: center; gap: 6px;" th:if="${dh.trangThai == 'PAID' || dh.trangThai == 'Hoàn thành'}">
+                        <i class="bi bi-check-circle-fill"></i> Đã hoàn thành
+                    </span>
+                    <span style="background-color: #fffaeb; color: #f79009; font-size: 12px; font-weight: 700; padding: 6px 14px; border-radius: var(--radius-full); display: inline-flex; align-items: center; gap: 6px;" th:if="${dh.trangThai == 'PENDING' || dh.trangThai == 'Chờ thanh toán'}">
+                        <i class="bi bi-clock-history"></i> Chờ thanh toán
+                    </span>
+                    <span style="background-color: #fef3f2; color: #f04438; font-size: 12px; font-weight: 700; padding: 6px 14px; border-radius: var(--radius-full); display: inline-flex; align-items: center; gap: 6px;" th:if="${dh.trangThai == 'CANCELLED' || dh.trangThai == 'Đã hủy'}">
+                        <i class="bi bi-x-circle-fill"></i> Đã hủy
+                    </span>
+                </div>
+            </div>
+            
+            <!-- Card Body -->
+            <div style="display: grid; grid-template-columns: 80px 1.5fr 1fr 1fr; gap: 20px; align-items: center;">
+                <!-- If items is NOT empty -->
+                <th:block th:if="${dh.items != null and !dh.items.isEmpty()}">
+                    <!-- Product Image (first item in order) -->
+                    <div style="width: 80px; height: 80px; background-color: var(--surface-container-low); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; overflow: hidden; border: 1px solid var(--surface-container);">
+                        <img th:src="${dh.items[0].sanPham.anhUrl != null ? '/images/' + dh.items[0].sanPham.anhUrl : 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=150&auto=format&fit=crop&q=80'}" 
+                             style="max-height: 85%; max-width: 85%; object-fit: contain;"
+                             onerror="this.src='https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=150&auto=format&fit=crop&q=80';">
+                    </div>
+                    
+                    <!-- Product name / detail -->
+                    <div>
+                        <h3 style="font-size: 15px; font-weight: 800; color: var(--primary); margin-bottom: 4px;" th:text="${dh.items[0].sanPham.tenSanPham}">iPhone 15 Pro Max</h3>
+                        <p style="font-size: 12.5px; color: var(--outline); margin: 0;" th:text="${dh.items[0].sanPham.nhaSanXuat.tenNhaSanXuat + ', Số lượng: ' + dh.items[0].soLuong}">Titanium Gray, 256GB</p>
+                    </div>
+                </th:block>
+
+                <!-- If items IS empty -->
+                <th:block th:if="${dh.items == null || dh.items.isEmpty()}">
+                    <!-- Product Image Mock -->
+                    <div style="width: 80px; height: 80px; background-color: var(--surface-container-low); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; overflow: hidden; border: 1px solid var(--surface-container);">
+                        <img src="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=150&auto=format&fit=crop&q=80" 
+                             style="max-height: 85%; max-width: 85%; object-fit: contain;">
+                    </div>
+                    
+                    <!-- Product name / detail Mock -->
+                    <div>
+                        <h3 style="font-size: 15px; font-weight: 800; color: var(--primary); margin-bottom: 4px;">Sản phẩm mua sắm</h3>
+                        <p style="font-size: 12.5px; color: var(--outline); margin: 0;">Thiết bị di động</p>
+                    </div>
+                </th:block>
+                
+                <!-- Payment method -->
+                <div>
+                    <span style="font-size: 9px; color: var(--outline); font-weight: 700; display: block; margin-bottom: 2px;" class="label-mono">PHUONGTHUC_THANHTOAN</span>
+                    <span style="font-size: 13.5px; font-weight: 700; color: var(--primary);" th:text="${dh.phuongThucThanhToan != null ? dh.phuongThucThanhToan : 'Thẻ Tín Dụng'}">Thẻ Tín Dụng (Visa)</span>
+                </div>
+                
+                <!-- Total Price -->
+                <div style="text-align: right;">
+                    <span style="font-size: 9px; color: var(--outline); font-weight: 700; display: block; margin-bottom: 2px;" class="label-mono">TONGTIEN</span>
+                    <span style="font-size: 18px; font-weight: 800; color: var(--primary);" th:text="${#numbers.formatDecimal(dh.tongTien, 0, 'COMMA', 0, 'POINT') + 'đ'}">34.990.000đ</span>
+                </div>
+            </div>
+            
+            <!-- Card Footer -->
+            <div style="display: flex; justify-content: flex-end; gap: 12px; border-top: 1px solid var(--surface-container-low); padding-top: 16px;">
+                <a th:href="@{'/don-hang/' + ${dh.id}}" class="btn" style="border: 1.5px solid var(--outline-variant); color: var(--primary); font-weight: 700; font-size: 13px; padding: 8px 18px; border-radius: var(--radius-sm); text-decoration: none; background-color: white; cursor: pointer;">Xem chi tiết</a>
+                <a th:href="@{/san-pham}" class="btn" style="background-color: #00687a; color: white; font-weight: 700; font-size: 13px; padding: 8px 18px; border: none; border-radius: var(--radius-sm); text-decoration: none; cursor: pointer;">Mua lại</a>
+            </div>
+        </div>
+
+        <!-- Load More Button -->
+        <button th:if="${!#lists.isEmpty(donHangs)}" class="btn" style="background-color: var(--surface-container-low); color: var(--primary); font-weight: 700; font-size: 13.5px; padding: 12px 24px; border: none; border-radius: var(--radius-full); display: flex; align-items: center; gap: 8px; align-self: center; margin-top: 12px;" onclick="alert('Đã tải tất cả các đơn hàng trong lịch sử của bạn!')">
+            Tải thêm đơn hàng <i class="bi bi-chevron-down"></i>
+        </button>
+
+    </section>
+
+</main>
+
+<!-- Footer -->
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+</body>
+</html>

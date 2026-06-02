@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: html-head('Giỏ hàng của bạn - TechSophist')}"></head>
+<body>
+
+<!-- Header Navigation -->
+<header th:replace="~{fragments/layout :: topbar}"></header>
+
+<!-- Main Container -->
+<main class="container">
+    
+    <div style="margin-bottom: 32px;">
+        <div class="label-mono" style="color: var(--secondary); font-weight: 700; margin-bottom: 4px;">Quy trình mua sắm</div>
+        <h1 class="display-lg">Giỏ hàng của bạn</h1>
+    </div>
+
+    <!-- Empty State -->
+    <div th:if="${#lists.isEmpty(items)}" class="card" style="text-align: center; padding: 60px;">
+        <i class="bi bi-cart-x" style="font-size: 48px; color: var(--outline); display: block; margin-bottom: 16px;"></i>
+        <h3 class="headline-sm">Giỏ hàng đang trống</h3>
+        <p class="body-sm" style="color: var(--outline); margin-bottom: 24px;">Bạn chưa thêm sản phẩm nào vào giỏ hàng của mình.</p>
+        <a class="btn btn-action" th:href="@{/san-pham}">
+            <i class="bi bi-phone"></i> Khám phá sản phẩm ngay
+        </a>
+    </div>
+
+    <!-- Active Cart Items Layout -->
+    <div th:if="${!#lists.isEmpty(items)}" style="display: grid; grid-template-columns: 2fr 1fr; gap: 32px; align-items: start;">
+        
+        <!-- Left: Items list -->
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 100px;">Hình ảnh</th>
+                        <th>Sản phẩm</th>
+                        <th>Đơn giá</th>
+                        <th style="width: 140px; text-align: center;">Số lượng</th>
+                        <th>Thành tiền</th>
+                        <th style="width: 80px; text-align: center;">Xóa</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="item : ${items}">
+                        <!-- Image -->
+                        <td>
+                            <div style="width: 60px; height: 60px; background-color: var(--surface-container-low); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; overflow: hidden; border: 1px solid var(--surface-container);">
+                                <img th:if="${item.sanPham.anhUrl != null}" th:src="@{'/images/' + ${item.sanPham.anhUrl}}" th:alt="${item.sanPham.tenSanPham}" style="max-height: 80%; max-width: 80%; object-fit: contain;"
+                                     onerror="if (this.alt.toLowerCase().includes('airpods') || this.alt.toLowerCase().includes('tai nghe')) { this.src='https://images.unsplash.com/photo-1588449668365-d15e397f6787?w=100&auto=format&fit=crop&q=60'; } else if (this.alt.toLowerCase().includes('samsung')) { this.src='https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=100&auto=format&fit=crop&q=60'; } else { this.src='https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=100&auto=format&fit=crop&q=60'; }">
+                                <img th:if="${item.sanPham.anhUrl == null}" src="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=100&auto=format&fit=crop&q=60" style="max-height: 80%; max-width: 80%; object-fit: contain;">
+                            </div>
+                        </td>
+                        
+                        <!-- Name & Category -->
+                        <td>
+                            <div style="font-weight: 700; color: var(--primary);" th:text="${item.sanPham.tenSanPham}">Tên điện thoại</div>
+                            <div style="font-size: 11px; color: var(--outline); text-transform: uppercase; font-weight: 600;" th:text="${item.sanPham.loaiHang.tenLoai}">Thương hiệu</div>
+                        </td>
+                        
+                        <!-- Price -->
+                        <td th:text="${#numbers.formatDecimal(item.sanPham.gia, 0, 'COMMA', 0, 'POINT') + ' đ'}" style="font-weight: 600; color: var(--on-surface-variant);">
+                            29.990.000 đ
+                        </td>
+                        
+                        <!-- Quantity Control -->
+                        <td style="text-align: center;">
+                            <form th:action="@{/gio-hang/cap-nhat}" method="post" style="display: inline-flex; align-items: center; justify-content: center; margin: 0;">
+                                <input type="hidden" name="sanPhamId" th:value="${item.sanPham.id}">
+                                <div class="quantity-control">
+                                    <button type="submit" name="action" value="decrease" class="quantity-btn" th:disabled="${item.soLuong <= 1}">-</button>
+                                    <input type="text" class="quantity-input" th:value="${item.soLuong}" readonly>
+                                    <button type="submit" name="action" value="increase" class="quantity-btn">+</button>
+                                </div>
+                            </form>
+                        </td>
+                        
+                        <!-- Total Price -->
+                        <td th:text="${#numbers.formatDecimal(item.sanPham.gia * item.soLuong, 0, 'COMMA', 0, 'POINT') + ' đ'}" style="font-weight: 700; color: var(--secondary);">
+                            29.990.000 đ
+                        </td>
+                        
+                        <!-- Delete Action -->
+                        <td style="text-align: center;">
+                            <form th:action="@{/gio-hang/xoa}" method="post" style="display: inline-flex; align-items: center; justify-content: center; margin: 0;">
+                                <input type="hidden" name="sanPhamId" th:value="${item.sanPham.id}">
+                                <button type="submit" class="btn btn-secondary" style="padding: 6px 10px; border-radius: var(--radius-sm); border: none; background: none; color: var(--error);" title="Xóa mặt hàng">
+                                    <i class="bi bi-trash3-fill" style="font-size: 16px;"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Right: Summary Panel -->
+        <div class="card" style="padding: 28px; border-radius: var(--radius-lg);">
+            <h3 class="headline-sm" style="margin-bottom: 20px; border-bottom: 1px solid var(--surface-container); padding-bottom: 12px;">Thông tin đơn hàng</h3>
+            
+            <div style="display: flex; justify-content: space-between; margin-bottom: 16px; font-size: 14px;">
+                <span style="color: var(--on-surface-variant);">Tạm tính:</span>
+                <!-- Let's calculate total price dynamically -->
+                <span style="font-weight: 600; color: var(--on-surface);" th:with="total=${#aggregates.sum(items.![sanPham.gia * soLuong])}" th:text="${#numbers.formatDecimal(total, 0, 'COMMA', 0, 'POINT') + ' đ'}">29.990.000 đ</span>
+            </div>
+            
+            <div style="display: flex; justify-content: space-between; margin-bottom: 16px; font-size: 14px;">
+                <span style="color: var(--on-surface-variant);">Vận chuyển:</span>
+                <span style="font-weight: 600; color: var(--success);">Miễn phí</span>
+            </div>
+            
+            <div style="border-top: 1.5px dashed var(--surface-container); margin: 20px 0; padding-top: 16px; display: flex; justify-content: space-between; align-items: flex-end;">
+                <span class="label-mono" style="color: var(--outline); font-size: 11px;">Tổng thanh toán</span>
+                <span style="font-size: 22px; font-weight: 800; color: var(--secondary);" th:with="total=${#aggregates.sum(items.![sanPham.gia * soLuong])}" th:text="${#numbers.formatDecimal(total, 0, 'COMMA', 0, 'POINT') + ' đ'}">29.990.000 đ</span>
+            </div>
+            
+            <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 24px;">
+                <a class="btn btn-action" th:href="@{/gio-hang/thanh-toan}" style="width: 100%; padding: 12px; justify-content: center; font-size: 15px;">
+                    <i class="bi bi-credit-card-2-front-fill"></i> Tiến hành thanh toán
+                </a>
+                <a class="btn btn-secondary" th:href="@{/san-pham}" style="width: 100%; padding: 12px; justify-content: center;">
+                    <i class="bi bi-chevron-left"></i> Tiếp tục mua sắm
+                </a>
+            </div>
+
+        </div>
+        
+    </div>
+
+</main>
+
+<!-- Footer -->
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+</body>
+</html>

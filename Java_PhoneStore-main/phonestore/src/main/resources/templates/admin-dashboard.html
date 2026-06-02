@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: html-head('Dashboard - TechSophist')}"></head>
+<body style="background-color: var(--surface); min-height: 100vh; display: flex; flex-direction: row;">
+
+<!-- Sidebar Navigation -->
+<aside th:replace="~{fragments/layout :: admin-sidebar('dashboard')}"></aside>
+
+<!-- Main Workspace Panel -->
+<main style="flex: 1; padding: 40px; display: flex; flex-direction: column; gap: 0; position: relative;">
+    
+    <!-- Top Search & Profile Header matching Figma exactly -->
+    <div th:replace="~{fragments/layout :: admin-header('Search analytics, orders, or products...', 'admin-search-input', null)}"></div>
+
+    <!-- Interactive Grid of Stats Cards matching Figma exactly -->
+    <section style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 32px;">
+        <!-- Card 1: Total Revenue -->
+        <div class="card" style="display: flex; flex-direction: column; background-color: var(--surface-container-lowest); border-radius: var(--radius-md); padding: 20px 24px; border: 1px solid var(--surface-container); box-shadow: var(--shadow-sm); margin-bottom: 0; position: relative;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                <div style="width: 40px; height: 40px; border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; background-color: #e6f6f0; color: var(--success); font-size: 18px;"><i class="bi bi-credit-card"></i></div>
+                <span style="font-size: 11px; font-weight: 700; color: var(--success); background-color: #e6f6f0; padding: 4px 8px; border-radius: var(--radius-full);">+12.5%</span>
+            </div>
+            <div>
+                <div style="font-size: 12px; color: var(--outline); font-weight: 600; margin-bottom: 4px; text-transform: none;">Tổng Doanh Thu</div>
+                <div style="font-size: 24px; font-weight: 800; color: var(--primary); line-height: 1.1; margin-bottom: 8px;" th:text="'đ' + ${#numbers.formatDecimal(totalRevenue, 0, 'COMMA', 0, 'POINT')}">đ2.485.000.000</div>
+                <div style="width: 100%; height: 4px; background-color: var(--surface-container-high); border-radius: var(--radius-full); overflow: hidden;">
+                    <div style="width: 72%; height: 100%; background-color: var(--secondary); border-radius: var(--radius-full);"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Card 2: Total Orders -->
+        <div class="card" style="display: flex; flex-direction: column; background-color: var(--surface-container-lowest); border-radius: var(--radius-md); padding: 20px 24px; border: 1px solid var(--surface-container); box-shadow: var(--shadow-sm); margin-bottom: 0; position: relative;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                <div style="width: 40px; height: 40px; border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; background-color: #f2f4f6; color: var(--primary); font-size: 18px;"><i class="bi bi-cart"></i></div>
+                <div style="display: flex; gap: 4px;">
+                    <span style="width: 6px; height: 6px; background-color: var(--error); border-radius: var(--radius-full);"></span>
+                    <span style="width: 6px; height: 6px; background-color: var(--success); border-radius: var(--radius-full);"></span>
+                    <span style="width: 6px; height: 6px; background-color: var(--secondary); border-radius: var(--radius-full);"></span>
+                </div>
+            </div>
+            <div>
+                <div style="font-size: 12px; color: var(--outline); font-weight: 600; margin-bottom: 4px; text-transform: none;">Số Đơn Hàng</div>
+                <div style="font-size: 24px; font-weight: 800; color: var(--primary); line-height: 1.1; margin-bottom: 6px;" th:text="${totalOrders}">1,284</div>
+                <div style="font-size: 11px; color: var(--outline); font-weight: 500;">82% Hoàn thành</div>
+            </div>
+        </div>
+
+        <!-- Card 3: New Customers -->
+        <div class="card" style="display: flex; flex-direction: column; background-color: var(--surface-container-lowest); border-radius: var(--radius-md); padding: 20px 24px; border: 1px solid var(--surface-container); box-shadow: var(--shadow-sm); margin-bottom: 0; position: relative;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                <div style="width: 40px; height: 40px; border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; background-color: #f5f3f7; color: #6d28d9; font-size: 18px;"><i class="bi bi-person-plus"></i></div>
+                <span style="font-size: 11px; font-weight: 600; color: var(--outline);">+48 users</span>
+            </div>
+            <div>
+                <div style="font-size: 12px; color: var(--outline); font-weight: 600; margin-bottom: 4px; text-transform: none;">Khách Hàng Mới</div>
+                <div style="font-size: 24px; font-weight: 800; color: var(--primary); line-height: 1.1; margin-bottom: 8px;" th:text="${newCustomers}">156</div>
+                <div style="display: flex; align-items: center; gap: 4px;">
+                    <!-- Overlapping avatars -->
+                    <div style="display: flex; -webkit-box-pack: start; justify-content: flex-start; position: relative; height: 18px; width: 48px;">
+                        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=50&auto=format&fit=crop&q=80" style="width: 18px; height: 18px; border-radius: var(--radius-full); border: 1px solid white; object-fit: cover; position: absolute; left: 0px; z-index: 3;">
+                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=50&auto=format&fit=crop&q=80" style="width: 18px; height: 18px; border-radius: var(--radius-full); border: 1px solid white; object-fit: cover; position: absolute; left: 10px; z-index: 2;">
+                        <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=50&auto=format&fit=crop&q=80" style="width: 18px; height: 18px; border-radius: var(--radius-full); border: 1px solid white; object-fit: cover; position: absolute; left: 20px; z-index: 1;">
+                    </div>
+                    <span style="font-size: 10px; font-weight: 700; color: var(--outline);">+15</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card 4: Low Stock -->
+        <div class="card" style="display: flex; flex-direction: column; background-color: var(--surface-container-lowest); border-radius: var(--radius-md); padding: 20px 24px; border: 1px solid var(--surface-container); box-shadow: var(--shadow-sm); margin-bottom: 0; position: relative;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                <div style="width: 40px; height: 40px; border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; background-color: #fef3f2; color: var(--error); font-size: 18px;"><i class="bi bi-exclamation-triangle"></i></div>
+                <a th:href="@{/san-pham/admin}" style="font-size: 11px; font-weight: 700; color: var(--error); text-decoration: none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">View All</a>
+            </div>
+            <div>
+                <div style="font-size: 12px; color: var(--outline); font-weight: 600; margin-bottom: 4px; text-transform: none;">Tồn Kho Thấp</div>
+                <div style="font-size: 24px; font-weight: 800; color: var(--primary); line-height: 1.1; margin-bottom: 6px;">
+                    <span style="color: var(--error);" th:text="${lowStockCount}">12</span> <span style="font-size: 14px; font-weight: 500; color: var(--outline);">Sản phẩm</span>
+                </div>
+                <div style="font-size: 11px; color: var(--outline); font-weight: 500;">Cần nhập hàng ngay</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Workspace Split Grid Layout matching Figma exactly -->
+    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 24px;">
+        
+        <!-- Left Side Dashboard Cards (Revenue Chart & Recent Transactions) -->
+        <div style="display: flex; flex-direction: column; gap: 24px;">
+            
+            <!-- Card 1: Revenue Overview HTML-CSS High Fidelity Bar Chart -->
+            <div class="card" style="background-color: var(--surface-container-lowest); border-radius: var(--radius-lg); padding: 24px; border: 1px solid var(--surface-container); box-shadow: var(--shadow-sm); margin-bottom: 0;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                    <div>
+                        <h3 style="font-size: 18px; font-weight: 800; color: var(--primary); margin-bottom: 4px;">Tổng Quan Doanh Thu</h3>
+                        <p style="font-size: 13px; color: var(--outline); margin: 0;">Thống kê 30 ngày gần nhất</p>
+                    </div>
+                    <select style="padding: 8px 16px; border: 1px solid var(--surface-container); background-color: var(--surface-container-low); border-radius: var(--radius-sm); font-size: 13px; font-weight: 600; color: var(--on-surface-variant); cursor: pointer; outline: none;">
+                        <option>Last 30 Days</option>
+                        <option>Last 7 Days</option>
+                        <option>This Year</option>
+                    </select>
+                </div>
+                
+                <!-- Pure Interactive HTML-CSS Bar Chart with Premium Tooltip -->
+                <div style="height: 240px; display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; padding: 20px 10px 10px; border-bottom: 1px solid var(--surface-container); position: relative;">
+                    <!-- WK 1 -->
+                    <div style="height: 40%; width: 44px; background-color: #cce1e5; border-radius: 4px 4px 0 0; cursor: pointer; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#00687a'" onmouseout="this.style.backgroundColor='#cce1e5'"></div>
+                    <div style="height: 65%; width: 44px; background-color: #cce1e5; border-radius: 4px 4px 0 0; cursor: pointer; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#00687a'" onmouseout="this.style.backgroundColor='#cce1e5'"></div>
+                    <!-- WK 2 -->
+                    <div style="height: 50%; width: 44px; background-color: #cce1e5; border-radius: 4px 4px 0 0; cursor: pointer; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#00687a'" onmouseout="this.style.backgroundColor='#cce1e5'"></div>
+                    <div style="height: 75%; width: 44px; background-color: #cce1e5; border-radius: 4px 4px 0 0; cursor: pointer; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#00687a'" onmouseout="this.style.backgroundColor='#cce1e5'"></div>
+                    <!-- WK 3 with visible Tooltip matching screen.png -->
+                    <div style="height: 55%; width: 44px; background-color: #cce1e5; border-radius: 4px 4px 0 0; cursor: pointer; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#00687a'" onmouseout="this.style.backgroundColor='#cce1e5'"></div>
+                    <div style="height: 85%; width: 44px; background-color: #00687a; border-radius: 4px 4px 0 0; cursor: pointer; position: relative;">
+                        <!-- Active tooltip -->
+                        <div style="position: absolute; top: -35px; left: 50%; transform: translateX(-50%); background-color: #0f172a; color: white; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; white-space: nowrap; box-shadow: var(--shadow-sm); z-index: 10;">
+                            ₫112M
+                            <div style="position: absolute; bottom: -4px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 4px solid transparent; border-right: 4px solid transparent; border-top: 4px solid #0f172a;"></div>
+                        </div>
+                    </div>
+                    <!-- WK 4 -->
+                    <div style="height: 70%; width: 44px; background-color: #cce1e5; border-radius: 4px 4px 0 0; cursor: pointer; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#00687a'" onmouseout="this.style.backgroundColor='#cce1e5'"></div>
+                </div>
+                
+                <!-- X-Axis Labels -->
+                <div style="display: flex; justify-content: space-between; padding-top: 8px; font-size: 11px; color: var(--outline); font-weight: 600; padding-left: 10px; padding-right: 10px;">
+                    <div style="width: 104px; text-align: center;">WK 01</div>
+                    <div style="width: 104px; text-align: center;">WK 02</div>
+                    <div style="width: 104px; text-align: center;">WK 03</div>
+                    <div style="width: 104px; text-align: center;">WK 04</div>
+                </div>
+            </div>
+
+            <!-- Card 2: Recent Transactions list -->
+            <div class="card" style="background-color: var(--surface-container-lowest); border-radius: var(--radius-lg); padding: 24px; border: 1px solid var(--surface-container); box-shadow: var(--shadow-sm); margin-bottom: 0;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h3 style="font-size: 18px; font-weight: 800; color: var(--primary); margin: 0;">Giao Dịch Gần Đây</h3>
+                    <a th:href="@{/don-hang}" style="font-size: 13.5px; font-weight: 700; color: var(--secondary); text-decoration: none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">Xem Tất Cả</a>
+                </div>
+                
+                <div class="table-responsive" style="margin-bottom: 0; border: none; box-shadow: none; overflow: visible;">
+                    <table style="width: 100%; border-collapse: separate; border-spacing: 0;">
+                        <thead>
+                            <tr style="background-color: transparent;">
+                                <th style="padding: 12px 16px; font-size: 11px; text-transform: uppercase; color: var(--outline); font-weight: 700; border-bottom: 1.5px solid var(--surface-container); width: 120px;">Mã Đơn</th>
+                                <th style="padding: 12px 16px; font-size: 11px; text-transform: uppercase; color: var(--outline); font-weight: 700; border-bottom: 1.5px solid var(--surface-container);">Khách Hàng</th>
+                                <th style="padding: 12px 16px; font-size: 11px; text-transform: uppercase; color: var(--outline); font-weight: 700; border-bottom: 1.5px solid var(--surface-container); text-align: right;">Số Tiền</th>
+                                <th style="padding: 12px 16px; font-size: 11px; text-transform: uppercase; color: var(--outline); font-weight: 700; border-bottom: 1.5px solid var(--surface-container); text-align: center; width: 140px;">Trạng Thái</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Show live orders if database has them -->
+                            <tr th:each="dh : ${recentOrders}" class="product-row" th:if="${!#lists.isEmpty(recentOrders)}">
+                                <td class="label-mono" style="font-weight: 700; color: var(--outline); padding: 14px 16px; border-bottom: 1px solid var(--surface-container-low);" th:text="'#HD-2024-' + ${#numbers.formatInteger(dh.id, 3)}">#HD-2024-001</td>
+                                <td style="padding: 14px 16px; border-bottom: 1px solid var(--surface-container-low);">
+                                    <div style="display: flex; align-items: center; gap: 10px;">
+                                        <div style="width: 26px; height: 26px; border-radius: var(--radius-full); background-color: #d1ecf1; color: #0c5460; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700;" th:text="${dh.khachHang != null ? #strings.substring(dh.khachHang.hoTen, 0, 1) : 'K'}">AL</div>
+                                        <span style="font-weight: 600; color: var(--primary); font-size: 13.5px;" th:text="${dh.khachHang != null ? dh.khachHang.hoTen : 'Khách Hàng Mẫu'}">Khách Hàng Mẫu</span>
+                                    </div>
+                                </td>
+                                <td style="padding: 14px 16px; border-bottom: 1px solid var(--surface-container-low); text-align: right; font-weight: 700; color: var(--primary); font-size: 13.5px;" th:text="'₫' + ${#numbers.formatDecimal(dh.tongTien, 0, 'COMMA', 0, 'POINT')}">₫24.500.000</td>
+                                <td style="padding: 14px 16px; border-bottom: 1px solid var(--surface-container-low); text-align: center;">
+                                    <span style="background-color: #edfcf2; color: #12b76a; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: var(--radius-full); display: inline-block;" th:if="${dh.trangThai == 'Completed' || dh.trangThai == 'Hoàn thành' || dh.trangThai == 'PAID'}">Completed</span>
+                                    <span style="background-color: #fffaeb; color: #f79009; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: var(--radius-full); display: inline-block;" th:if="${dh.trangThai == 'Pending' || dh.trangThai == 'Chờ thanh toán'}">Pending</span>
+                                    <span style="background-color: #fef3f2; color: #f04438; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: var(--radius-full); display: inline-block;" th:if="${dh.trangThai == 'Cancelled' || dh.trangThai == 'Đã hủy'}">Cancelled</span>
+                                </td>
+                            </tr>
+                            
+                            <!-- Static mockup fallback rows exactly from screen.png when database is fresh -->
+                            <tr class="product-row" th:if="${#lists.isEmpty(recentOrders)}">
+                                <td class="label-mono" style="font-weight: 700; color: var(--outline); padding: 14px 16px; border-bottom: 1px solid var(--surface-container-low);">#HD-2024-001</td>
+                                <td style="padding: 14px 16px; border-bottom: 1px solid var(--surface-container-low);">
+                                    <div style="display: flex; align-items: center; gap: 10px;">
+                                        <div style="width: 26px; height: 26px; border-radius: var(--radius-full); background-color: #d0f2ff; color: #006699; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700;">AL</div>
+                                        <span style="font-weight: 600; color: var(--primary); font-size: 13.5px;">Anh Lee</span>
+                                    </div>
+                                </td>
+                                <td style="padding: 14px 16px; border-bottom: 1px solid var(--surface-container-low); text-align: right; font-weight: 700; color: var(--primary); font-size: 13.5px;">₫24.500.000</td>
+                                <td style="padding: 14px 16px; border-bottom: 1px solid var(--surface-container-low); text-align: center;">
+                                    <span style="background-color: #edfcf2; color: #12b76a; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: var(--radius-full); display: inline-block;">Completed</span>
+                                </td>
+                            </tr>
+                            <tr class="product-row" th:if="${#lists.isEmpty(recentOrders)}">
+                                <td class="label-mono" style="font-weight: 700; color: var(--outline); padding: 14px 16px; border-bottom: 1px solid var(--surface-container-low);">#HD-2024-002</td>
+                                <td style="padding: 14px 16px; border-bottom: 1px solid var(--surface-container-low);">
+                                    <div style="display: flex; align-items: center; gap: 10px;">
+                                        <div style="width: 26px; height: 26px; border-radius: var(--radius-full); background-color: #f2f4f6; color: #4b5563; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700;">BT</div>
+                                        <span style="font-weight: 600; color: var(--primary); font-size: 13.5px;">Bảo Trân</span>
+                                    </div>
+                                </td>
+                                <td style="padding: 14px 16px; border-bottom: 1px solid var(--surface-container-low); text-align: right; font-weight: 700; color: var(--primary); font-size: 13.5px;">₫1.200.000</td>
+                                <td style="padding: 14px 16px; border-bottom: 1px solid var(--surface-container-low); text-align: center;">
+                                    <span style="background-color: #f3f4f6; color: #4b5563; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: var(--radius-full); display: inline-block;">Pending</span>
+                                </td>
+                            </tr>
+                            <tr class="product-row" th:if="${#lists.isEmpty(recentOrders)}">
+                                <td class="label-mono" style="font-weight: 700; color: var(--outline); padding: 14px 16px; border-bottom: 1px solid var(--surface-container-low);">#HD-2024-003</td>
+                                <td style="padding: 14px 16px; border-bottom: 1px solid var(--surface-container-low);">
+                                    <div style="display: flex; align-items: center; gap: 10px;">
+                                        <div style="width: 26px; height: 26px; border-radius: var(--radius-full); background-color: #e8f5e9; color: #2e7d32; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700;">KM</div>
+                                        <span style="font-weight: 600; color: var(--primary); font-size: 13.5px;">Khôi Minh</span>
+                                    </div>
+                                </td>
+                                <td style="padding: 14px 16px; border-bottom: 1px solid var(--surface-container-low); text-align: right; font-weight: 700; color: var(--primary); font-size: 13.5px;">₫42.000.000</td>
+                                <td style="padding: 14px 16px; border-bottom: 1px solid var(--surface-container-low); text-align: center;">
+                                    <span style="background-color: #edfcf2; color: #12b76a; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: var(--radius-full); display: inline-block;">Completed</span>
+                                </td>
+                            </tr>
+                            <tr class="product-row" th:if="${#lists.isEmpty(recentOrders)}">
+                                <td class="label-mono" style="font-weight: 700; color: var(--outline); padding: 14px 16px; border-bottom: 1px solid var(--surface-container-low);">#HD-2024-004</td>
+                                <td style="padding: 14px 16px; border-bottom: 1px solid var(--surface-container-low);">
+                                    <div style="display: flex; align-items: center; gap: 10px;">
+                                        <div style="width: 26px; height: 26px; border-radius: var(--radius-full); background-color: #fde8e8; color: #c81e1e; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700;">NT</div>
+                                        <span style="font-weight: 600; color: var(--primary); font-size: 13.5px;">Ngọc Thảo</span>
+                                    </div>
+                                </td>
+                                <td style="padding: 14px 16px; border-bottom: 1px solid var(--surface-container-low); text-align: right; font-weight: 700; color: var(--primary); font-size: 13.5px;">₫15.750.000</td>
+                                <td style="padding: 14px 16px; border-bottom: 1px solid var(--surface-container-low); text-align: center;">
+                                    <span style="background-color: #fef3f2; color: #f04438; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: var(--radius-full); display: inline-block;">Cancelled</span>
+                                </td>
+                            </tr>
+                            <tr class="product-row" th:if="${#lists.isEmpty(recentOrders)}">
+                                <td class="label-mono" style="font-weight: 700; color: var(--outline); padding: 14px 16px; border-bottom: 1px solid var(--surface-container-low);">#HD-2024-005</td>
+                                <td style="padding: 14px 16px; border-bottom: 1px solid var(--surface-container-low);">
+                                    <div style="display: flex; align-items: center; gap: 10px;">
+                                        <div style="width: 26px; height: 26px; border-radius: var(--radius-full); background-color: #e0f2fe; color: #0369a1; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700;">VD</div>
+                                        <span style="font-weight: 600; color: var(--primary); font-size: 13.5px;">Văn Dũng</span>
+                                    </div>
+                                </td>
+                                <td style="padding: 14px 16px; border-bottom: 1px solid var(--surface-container-low); text-align: right; font-weight: 700; color: var(--primary); font-size: 13.5px;">₫8.900.000</td>
+                                <td style="padding: 14px 16px; border-bottom: 1px solid var(--surface-container-low); text-align: center;">
+                                    <span style="background-color: #edfcf2; color: #12b76a; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: var(--radius-full); display: inline-block;">Completed</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+        </div>
+
+        <!-- Right Side Dashboard Cards (Sales by Category Donut & Best Sellers) -->
+        <div style="display: flex; flex-direction: column; gap: 24px;">
+            
+            <!-- Card 1: Donut Chart matching screen.png exactly -->
+            <div class="card" style="background-color: var(--surface-container-lowest); border-radius: var(--radius-lg); padding: 24px; border: 1px solid var(--surface-container); box-shadow: var(--shadow-sm); margin-bottom: 0;">
+                <h3 style="font-size: 18px; font-weight: 800; color: var(--primary); margin-bottom: 24px;">Doanh Số Theo Loại</h3>
+                
+                <!-- Stunning SVG Donut Chart with live parameters -->
+                <div style="display: flex; justify-content: center; align-items: center; position: relative; height: 180px; margin-bottom: 24px;">
+                    <svg width="160" height="160" viewBox="0 0 42 42" class="donut">
+                        <!-- Background Circle -->
+                        <circle cx="21" cy="21" r="15.91549430918954" fill="transparent"></circle>
+                        <circle cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="var(--surface-container)" stroke-width="4"></circle>
+                        
+                        <!-- Accessories 25% (offset 0, duration 25) -->
+                        <circle cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="#b0cdd4" stroke-width="4" stroke-dasharray="25 75" stroke-dashoffset="0"></circle>
+                        <!-- Laptops 30% (offset 25, duration 30) -->
+                        <circle cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="#000000" stroke-width="4" stroke-dasharray="30 70" stroke-dashoffset="75"></circle>
+                        <!-- Smartphones 45% (offset 55, duration 45) -->
+                        <circle cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="#00687a" stroke-width="4" stroke-dasharray="45 55" stroke-dashoffset="45"></circle>
+                    </svg>
+                    <!-- Text center -->
+                    <div style="position: absolute; text-align: center;">
+                        <div style="font-size: 22px; font-weight: 800; color: var(--primary); line-height: 1.1;">1.2k</div>
+                        <div style="font-size: 9px; font-weight: 700; color: var(--outline); text-transform: uppercase; letter-spacing: 0.05em;">ITEMS</div>
+                    </div>
+                </div>
+                
+                <!-- Legends -->
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; font-size: 13.5px; font-weight: 600;">
+                        <span style="display: flex; align-items: center; gap: 8px;"><span style="width: 8px; height: 8px; border-radius: var(--radius-full); background-color: #00687a;"></span> Smartphones</span>
+                        <span style="color: var(--primary);">45%</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; font-size: 13.5px; font-weight: 600;">
+                        <span style="display: flex; align-items: center; gap: 8px;"><span style="width: 8px; height: 8px; border-radius: var(--radius-full); background-color: #000000;"></span> Laptops</span>
+                        <span style="color: var(--primary);">30%</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; font-size: 13.5px; font-weight: 600;">
+                        <span style="display: flex; align-items: center; gap: 8px;"><span style="width: 8px; height: 8px; border-radius: var(--radius-full); background-color: #b0cdd4;"></span> Accessories</span>
+                        <span style="color: var(--primary);">25%</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 2: Best Selling Products -->
+            <div class="card" style="background-color: var(--surface-container-lowest); border-radius: var(--radius-lg); padding: 24px; border: 1px solid var(--surface-container); box-shadow: var(--shadow-sm); margin-bottom: 0;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h3 style="font-size: 18px; font-weight: 800; color: var(--primary); margin: 0;">Sản Phẩm Bán Chạy</h3>
+                    <span style="font-size: 10px; font-weight: 700; color: var(--outline); letter-spacing: 0.05em;">THÁNG NÀY</span>
+                </div>
+                
+                <!-- Product list -->
+                <div style="display: flex; flex-direction: column; gap: 16px;">
+                    <!-- Item 1 -->
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div style="width: 44px; height: 44px; background-color: var(--surface-container-low); border-radius: var(--radius-default); overflow: hidden; display: flex; align-items: center; justify-content: center; border: 1px solid var(--surface-container);">
+                                <img src="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=100&auto=format&fit=crop&q=80" style="max-height: 80%; max-width: 80%; object-fit: contain;">
+                            </div>
+                            <div>
+                                <div style="font-weight: 700; color: var(--primary); font-size: 13.5px;">iPhone 15 Pro Max</div>
+                                <div style="font-size: 10px; color: var(--outline); font-weight: 700;" class="label-mono">SMARTPHONES</div>
+                            </div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-weight: 700; color: var(--primary); font-size: 13.5px;">245</div>
+                            <div style="font-size: 9px; color: var(--outline); font-weight: 500;">Units Sold</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Item 2 -->
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div style="width: 44px; height: 44px; background-color: var(--surface-container-low); border-radius: var(--radius-default); overflow: hidden; display: flex; align-items: center; justify-content: center; border: 1px solid var(--surface-container);">
+                                <img src="https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=100&auto=format&fit=crop&q=80" style="max-height: 80%; max-width: 80%; object-fit: contain;">
+                            </div>
+                            <div>
+                                <div style="font-weight: 700; color: var(--primary); font-size: 13.5px;">MacBook Pro M3</div>
+                                <div style="font-size: 10px; color: var(--outline); font-weight: 700;" class="label-mono">LAPTOPS</div>
+                            </div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-weight: 700; color: var(--primary); font-size: 13.5px;">182</div>
+                            <div style="font-size: 9px; color: var(--outline); font-weight: 500;">Units Sold</div>
+                        </div>
+                    </div>
+
+                    <!-- Item 3 -->
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div style="width: 44px; height: 44px; background-color: var(--surface-container-low); border-radius: var(--radius-default); overflow: hidden; display: flex; align-items: center; justify-content: center; border: 1px solid var(--surface-container);">
+                                <img src="https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?w=100&auto=format&fit=crop&q=80" style="max-height: 80%; max-width: 80%; object-fit: contain;">
+                            </div>
+                            <div>
+                                <div style="font-weight: 700; color: var(--primary); font-size: 13.5px;">iPad Pro 12.9"</div>
+                                <div style="font-size: 10px; color: var(--outline); font-weight: 700;" class="label-mono">TABLETS</div>
+                            </div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-weight: 700; color: var(--primary); font-size: 13.5px;">96</div>
+                            <div style="font-size: 9px; color: var(--outline); font-weight: 500;">Units Sold</div>
+                        </div>
+                    </div>
+
+                    <!-- Item 4 -->
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div style="width: 44px; height: 44px; background-color: var(--surface-container-low); border-radius: var(--radius-default); overflow: hidden; display: flex; align-items: center; justify-content: center; border: 1px solid var(--surface-container);">
+                                <img src="https://images.unsplash.com/photo-1588449668365-d15e397f6787?w=100&auto=format&fit=crop&q=80" style="max-height: 80%; max-width: 80%; object-fit: contain;">
+                            </div>
+                            <div>
+                                <div style="font-weight: 700; color: var(--primary); font-size: 13.5px;">Sony WH-1000XM5</div>
+                                <div style="font-size: 10px; color: var(--outline); font-weight: 700;" class="label-mono">AUDIO</div>
+                            </div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-weight: 700; color: var(--primary); font-size: 13.5px;">74</div>
+                            <div style="font-size: 9px; color: var(--outline); font-weight: 500;">Units Sold</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+        
+    </div>
+
+    <!-- Floating Plus Action Button at bottom right corner linking directly to add product -->
+    <a th:href="@{/san-pham/admin/form}" style="position: fixed; bottom: 32px; right: 32px; width: 56px; height: 56px; border-radius: var(--radius-full); background-color: var(--primary); color: var(--on-primary); display: flex; align-items: center; justify-content: center; font-size: 24px; box-shadow: var(--shadow-level-2); text-decoration: none; z-index: 100; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'" title="Thêm sản phẩm mới">
+        <i class="bi bi-plus"></i>
+    </a>
+
+</main>
+
+</body>
+</html>

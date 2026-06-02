@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: html-head('Trang cá nhân - TechSophist')}"></head>
+<body>
+
+<!-- Header Navigation -->
+<header th:replace="~{fragments/layout :: topbar}"></header>
+
+<!-- Main Container -->
+<main class="container">
+    
+    <div style="margin-bottom: 32px; display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 16px;">
+        <div>
+            <div class="label-mono" style="color: var(--secondary); font-weight: 700; margin-bottom: 4px;">Khách hàng thành viên</div>
+            <h1 class="display-lg" style="margin-bottom: 0;">Bảng điều khiển cá nhân</h1>
+        </div>
+        <a class="btn btn-secondary" th:href="@{/}">
+            <i class="bi bi-arrow-left"></i> Về trang chủ
+        </a>
+    </div>
+
+    <!-- Info Banner Grid -->
+    <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 32px; align-items: start;">
+        
+        <!-- Left: Profile summary card -->
+        <section class="card" style="padding: 32px 24px; text-align: center; border-radius: var(--radius-lg);">
+            <div style="width: 80px; height: 80px; background-color: var(--surface-container-low); border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; font-size: 32px; color: var(--secondary); margin: 0 auto 16px;">
+                <i class="bi bi-person-circle"></i>
+            </div>
+            
+            <h2 class="headline-sm" style="margin-bottom: 4px;" th:text="${user != null ? user.hoTen : 'Khách hàng'}">Tên khách hàng</h2>
+            <p class="body-sm" style="color: var(--outline); margin-bottom: 24px;">Thành viên TechSophist</p>
+            
+            <div style="display: flex; flex-direction: column; gap: 10px; border-top: 1px solid var(--surface-container); padding-top: 20px;">
+                <a class="btn btn-primary" th:href="@{/user/profile}" style="width: 100%;">
+                    <i class="bi bi-pencil-square"></i> Xem & Sửa hồ sơ
+                </a>
+                <a class="btn btn-secondary" th:href="@{/don-hang}" style="width: 100%;">
+                    <i class="bi bi-clock-history"></i> Lịch sử đơn hàng
+                </a>
+            </div>
+        </section>
+        
+        <!-- Right: Helpful tools grid -->
+        <div style="display: flex; flex-direction: column; gap: 24px;">
+            <!-- Active Shopping Guide -->
+            <div class="card" style="margin-bottom: 0; padding: 32px;">
+                <h3 class="headline-sm" style="margin-bottom: 8px;">Dịch vụ thành viên</h3>
+                <p class="body-md" style="color: var(--on-surface-variant); margin-bottom: 20px;">Bạn được hưởng các ưu đãi bảo hành và miễn phí vận chuyển trên toàn hệ thống cửa hàng của TechSophist.</p>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                    <div style="background-color: var(--surface-container-low); padding: 16px; border-radius: var(--radius-default);">
+                        <div style="font-size: 20px; color: var(--secondary); margin-bottom: 8px;"><i class="bi bi-truck"></i></div>
+                        <div style="font-weight: 700; font-size: 14px; margin-bottom: 4px;">Vận chuyển Hỏa tốc</div>
+                        <p style="font-size: 12px; color: var(--outline); margin-bottom: 0;">Giao hàng siêu tốc trong vòng 2 giờ cho các dòng Flagship.</p>
+                    </div>
+                    <div style="background-color: var(--surface-container-low); padding: 16px; border-radius: var(--radius-default);">
+                        <div style="font-size: 20px; color: var(--secondary); margin-bottom: 8px;"><i class="bi bi-shield-check"></i></div>
+                        <div style="font-weight: 700; font-size: 14px; margin-bottom: 4px;">Bảo hành 24 tháng</div>
+                        <p style="font-size: 12px; color: var(--outline); margin-bottom: 0;">Bảo hành rơi vỡ và thay pin miễn phí cho tất cả các máy.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Promotion box -->
+            <div class="card" style="margin-bottom: 0; background-color: var(--primary-container); color: var(--on-primary-container); border: none;">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+                    <div>
+                        <h4 style="color: #ffffff; font-size: 16px; font-weight: 700; margin-bottom: 4px;">Ưu đãi độc quyền thiết bị</h4>
+                        <p style="font-size: 13px; color: var(--on-primary-container); margin-bottom: 0;">Giảm thêm 5% cho tất cả đơn hàng phụ kiện khi mua kèm iPhone 15 Pro Max.</p>
+                    </div>
+                    <a class="btn btn-action" th:href="@{/san-pham}" style="font-size: 13px; font-weight: 700; padding: 8px 16px;">
+                        Mua ngay
+                    </a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</main>
+
+<!-- Footer -->
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+</body>
+</html>

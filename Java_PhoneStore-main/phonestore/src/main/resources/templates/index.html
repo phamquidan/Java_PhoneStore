@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: html-head('Trang chủ - TechSophist')}"></head>
+<body>
+
+<!-- Header Navigation matching Figma -->
+<header th:replace="~{fragments/layout :: topbar}"></header>
+
+<!-- Main Container -->
+<main class="container">
+    
+    <!-- Hero Banner Split (iPhone 15 Pro banner) -->
+    <div class="hero-split">
+        <div class="hero-content">
+            <span class="tag-new-release">DÒNG MÁY MỚI</span>
+            <h1 class="hero-title">iPhone 15 Pro.<br>Đúc từ Titanium.</h1>
+            <p class="hero-subtitle">Chiếc iPhone đầu tiên sở hữu thiết kế titan chuẩn hàng không vũ trụ, siêu nhẹ và siêu bền bỉ.</p>
+            <div class="actions">
+                <a class="btn btn-primary" th:href="@{/san-pham}">Mua ngay</a>
+                <a class="btn btn-secondary" th:href="@{/san-pham/2}">Tìm hiểu thêm</a>
+            </div>
+        </div>
+        <div class="hero-image-container">
+            <img src="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=450&auto=format&fit=crop&q=80" alt="iPhone 15 Pro Titanium Mock">
+        </div>
+    </div>
+
+    <!-- Partner Logos Ribbon -->
+    <section class="partner-ribbon" id="brands-section">
+        <h3 class="partner-title">ĐỐI TÁC ỦY QUYỀN CAO CẤP</h3>
+        <div class="partner-logos">
+            <span class="partner-logo-demo" title="Apple" style="background-image: url('https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg'); background-size: contain; background-repeat: no-repeat; background-position: center; background-color: transparent;"></span>
+            <span class="partner-logo-demo" title="Samsung" style="background-image: url('https://upload.wikimedia.org/wikipedia/commons/2/24/Samsung_Logo.svg'); background-size: contain; background-repeat: no-repeat; background-position: center; background-color: transparent; width: 60px;"></span>
+            <span class="partner-logo-demo" title="Xiaomi" style="background-image: url('https://upload.wikimedia.org/wikipedia/commons/a/ae/Xiaomi_logo_%282021-%29.svg'); background-size: contain; background-repeat: no-repeat; background-position: center; background-color: transparent;"></span>
+            <span class="partner-logo-demo" title="Oppo" style="background-image: url('https://upload.wikimedia.org/wikipedia/commons/0/08/OPPO_Logo.svg'); background-size: contain; background-repeat: no-repeat; background-position: center; background-color: transparent; width: 50px;"></span>
+            <span class="partner-logo-demo" title="Vivo" style="background-image: url('https://upload.wikimedia.org/wikipedia/commons/e/e5/Vivo_logo.svg'); background-size: contain; background-repeat: no-repeat; background-position: center; background-color: transparent; width: 45px;"></span>
+        </div>
+    </section>
+
+    <!-- New Arrivals Section -->
+    <section style="margin-bottom: 50px;">
+        <div class="section-header">
+            <div>
+                <h2 class="section-title">Hàng mới về</h2>
+                <p class="section-subtitle">Khám phá các sản phẩm công nghệ tiên phong mới nhất.</p>
+            </div>
+            <a th:href="@{/san-pham}" class="view-all-link">Xem tất cả <i class="bi bi-arrow-right"></i></a>
+        </div>
+        
+        <div class="grid-new-arrivals">
+            <!-- Left: Large Galaxy S24 Ultra Card -->
+            <article class="large-galaxy-card">
+                <span class="tag-limited">PHIÊN BẢN GIỚI HẠN</span>
+                <h3 class="headline-sm" style="font-size: 24px; margin-bottom: 8px;">Galaxy S24 Ultra</h3>
+                <p class="body-sm" style="color: var(--on-surface-variant); margin-bottom: 24px;">Được chế tác từ Titanium cùng hiệu năng AI đột phá.</p>
+                
+                <div style="flex-grow: 1; display: flex; align-items: center; justify-content: center; margin-bottom: 32px; height: 260px;">
+                    <img src="https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=300&auto=format&fit=crop&q=60" alt="Galaxy S24 Ultra Mock" style="max-height: 90%; max-width: 90%; object-fit: contain;">
+                </div>
+                
+                <a class="btn btn-action" th:href="@{/san-pham/1}" style="width: 100%; border-radius: var(--radius-default); justify-content: center; padding: 14px; font-weight: 700;">
+                    Mua Galaxy
+                </a>
+            </article>
+            
+            <!-- Right: Small stack -->
+            <div class="arrivals-stack">
+                <div class="arrivals-row">
+                    <!-- Google Pixel 8 -->
+                    <div class="arrival-small-card">
+                        <h4 class="headline-sm" style="font-size: 16px; margin-bottom: 4px;">Google Pixel 8</h4>
+                        <p class="body-sm" style="font-size: 12.5px; color: var(--on-surface-variant); margin-bottom: 16px; min-height: 36px;">Sức mạnh của trí tuệ nhân tạo trong túi bạn.</p>
+                        <div style="height: 100px; display: flex; align-items: center; justify-content: center; margin-bottom: 12px; background-color: var(--surface-container-low); border-radius: var(--radius-md);">
+                            <img src="https://images.unsplash.com/photo-1598327105666-5b89351aff97?w=100&auto=format&fit=crop&q=60" alt="Pixel 8 Mock" style="max-height: 80%; object-fit: contain;">
+                        </div>
+                    </div>
+                    
+                    <!-- Xiaomi 14 Pro -->
+                    <div class="arrival-small-card">
+                        <h4 class="headline-sm" style="font-size: 16px; margin-bottom: 4px;">Xiaomi 14 Pro</h4>
+                        <p class="body-sm" style="font-size: 12.5px; color: var(--on-surface-variant); margin-bottom: 16px; min-height: 36px;">Ống kính Leica tái định nghĩa nhiếp ảnh.</p>
+                        <div style="height: 100px; display: flex; align-items: center; justify-content: center; margin-bottom: 12px; background-color: var(--surface-container-low); border-radius: var(--radius-md);">
+                            <img src="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=100&auto=format&fit=crop&q=60" alt="Xiaomi 14 Pro Mock" style="max-height: 80%; object-fit: contain;">
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Accessories Pack Wide -->
+                <div class="accessories-wide-card">
+                    <div class="accessories-content">
+                        <h4 class="headline-sm" style="font-size: 18px; margin-bottom: 8px;">Bộ phụ kiện cao cấp</h4>
+                        <p class="body-sm" style="color: var(--on-surface-variant); margin-bottom: 20px; font-size: 13px;">Bao da và củ sạc cao cấp chuyên dụng cho thiết bị mới.</p>
+                        <a th:href="@{/san-pham(loaiId=6)}" class="view-all-link" style="font-size: 13px;">Khám phá bộ sưu tập <i class="bi bi-arrow-right"></i></a>
+                    </div>
+                    <div class="accessories-image"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Best Sellers Section -->
+    <section style="margin-bottom: 50px;">
+        <div class="section-header">
+            <div>
+                <h2 class="section-title">Sản phẩm bán chạy</h2>
+                <p class="section-subtitle">Những thiết bị được cộng đồng của chúng tôi yêu thích nhất.</p>
+            </div>
+            <a th:href="@{/san-pham}" class="view-all-link">Xem tất cả <i class="bi bi-arrow-right"></i></a>
+        </div>
+        
+        <div class="best-sellers-grid">
+            <!-- Best Seller Card 1 -->
+            <article class="best-seller-card" style="cursor: pointer;" onclick="window.location.href='/san-pham/2'">
+                <div class="best-seller-image-wrapper">
+                    <img src="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=200&auto=format&fit=crop&q=60" alt="iPhone 15 Mock">
+                    <span class="best-seller-brand"><i class="bi bi-apple"></i></span>
+                </div>
+                <h3 class="best-seller-title">iPhone 15</h3>
+                <div class="best-seller-rating">
+                    <i class="bi bi-star-fill"></i> <b>4.9</b> <span>(1.2k đánh giá)</span>
+                </div>
+                <div class="best-seller-footer">
+                    <div class="best-seller-price">19.990.000 đ</div>
+                    <button class="best-seller-cart-btn" onclick="event.stopPropagation(); alert('Đã thêm sản phẩm vào giỏ hàng!');"><i class="bi bi-cart3"></i></button>
+                </div>
+            </article>
+
+            <!-- Best Seller Card 2 -->
+            <article class="best-seller-card" style="cursor: pointer;" onclick="window.location.href='/san-pham/1'">
+                <div class="best-seller-image-wrapper">
+                    <img src="https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=200&auto=format&fit=crop&q=60" alt="Samsung S24 Mock">
+                    <span class="best-seller-brand" style="font-size: 8px; font-weight: 800; text-transform: uppercase;">S</span>
+                </div>
+                <h3 class="best-seller-title">Samsung S24</h3>
+                <div class="best-seller-rating">
+                    <i class="bi bi-star-fill"></i> <b>4.8</b> <span>(850 đánh giá)</span>
+                </div>
+                <div class="best-seller-footer">
+                    <div class="best-seller-price">21.990.000 đ</div>
+                    <button class="best-seller-cart-btn" onclick="event.stopPropagation(); alert('Đã thêm sản phẩm vào giỏ hàng!');"><i class="bi bi-cart3"></i></button>
+                </div>
+            </article>
+
+            <!-- Best Seller Card 3 -->
+            <article class="best-seller-card" style="cursor: pointer;" onclick="window.location.href='/san-pham/3'">
+                <div class="best-seller-image-wrapper">
+                    <img src="https://images.unsplash.com/photo-1598327105666-5b89351aff97?w=200&auto=format&fit=crop&q=60" alt="Xiaomi 13 Ultra Mock">
+                    <span class="best-seller-brand" style="font-size: 8px; font-weight: 800; text-transform: uppercase;">Mi</span>
+                </div>
+                <h3 class="best-seller-title">Xiaomi 13 Ultra</h3>
+                <div class="best-seller-rating">
+                    <i class="bi bi-star-fill"></i> <b>4.7</b> <span>(420 đánh giá)</span>
+                </div>
+                <div class="best-seller-footer">
+                    <div class="best-seller-price">18.990.000 đ</div>
+                    <button class="best-seller-cart-btn" onclick="event.stopPropagation(); alert('Đã thêm sản phẩm vào giỏ hàng!');"><i class="bi bi-cart3"></i></button>
+                </div>
+            </article>
+
+            <!-- Best Seller Card 4 -->
+            <article class="best-seller-card" style="cursor: pointer;" onclick="window.location.href='/san-pham/4'">
+                <div class="best-seller-image-wrapper">
+                    <img src="https://images.unsplash.com/photo-1580910051074-3eb694886505?w=200&auto=format&fit=crop&q=60" alt="Google Pixel 7a Mock">
+                    <span class="best-seller-brand" style="font-size: 8px; font-weight: 800; text-transform: uppercase;">G</span>
+                </div>
+                <h3 class="best-seller-title">Google Pixel 7a</h3>
+                <div class="best-seller-rating">
+                    <i class="bi bi-star-fill"></i> <b>4.6</b> <span>(2.1k đánh giá)</span>
+                </div>
+                <div class="best-seller-footer">
+                    <div class="best-seller-price">12.990.000 đ</div>
+                    <button class="best-seller-cart-btn" onclick="event.stopPropagation(); alert('Đã thêm sản phẩm vào giỏ hàng!');"><i class="bi bi-cart3"></i></button>
+                </div>
+            </article>
+        </div>
+    </section>
+
+    <!-- Feature Black Bar -->
+    <section class="feature-black-bar">
+        <div class="feature-column">
+            <i class="bi bi-truck"></i>
+            <h4>Giao hàng hỏa tốc miễn phí</h4>
+            <p>Cho mọi đơn hàng trên 10 triệu đồng. Giao ngay trong ngày tại khu vực hỗ trợ.</p>
+        </div>
+        <div class="feature-column">
+            <i class="bi bi-shield-check"></i>
+            <h4>Bảo hành chính hãng 2 năm</h4>
+            <p>Chế độ bảo hành chính hãng từ nhà sản xuất cho mọi phiên bản.</p>
+        </div>
+        <div class="feature-column">
+            <i class="bi bi-arrow-counterclockwise"></i>
+            <h4>Đổi trả trong 30 ngày</h4>
+            <p>Đổi trả dễ dàng cho thiết bị còn nguyên seal trong vòng 30 ngày.</p>
+        </div>
+    </section>
+
+</main>
+
+<!-- Footer matching Figma -->
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+</body>
+</html>

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: html-head('Đăng ký tài khoản - TechSophist')}"></head>
+<body style="background-color: var(--surface); min-height: 100vh; display: flex; flex-direction: column;">
+
+<!-- Header Navigation -->
+<header th:replace="~{fragments/layout :: topbar}"></header>
+
+<!-- Main Container -->
+<main class="container" style="display: flex; align-items: center; justify-content: center; min-height: calc(100vh - 180px); padding: 40px 16px;">
+    
+    <section class="card" style="width: 100%; max-width: 480px; margin: 0 auto; box-shadow: var(--shadow-level-2); border-radius: var(--radius-lg); padding: 40px; border: 1px solid var(--surface-container); background-color: var(--surface-container-lowest);">
+        <div style="text-align: center; margin-bottom: 32px;">
+            <div style="width: 48px; height: 48px; background-color: var(--surface-container-low); border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; font-size: 22px; color: var(--secondary); margin: 0 auto 16px; border: 1px solid var(--surface-container);"><i class="bi bi-person-plus-fill"></i></div>
+            <h2 class="headline-md" style="margin-bottom: 8px; font-weight: 700; font-size: 24px; color: var(--primary);">Đăng ký tài khoản</h2>
+            <p class="body-sm" style="color: var(--outline); font-size: 13.5px;">Tham gia hệ thống mua sắm TechSophist của chúng tôi</p>
+        </div>
+
+        <form method="post" th:action="@{/register}">
+            <div class="form-group" style="margin-bottom: 18px;">
+                <label class="form-label" for="username" style="font-size: 11px; margin-bottom: 6px;">Tên đăng nhập</label>
+                <div class="input-icon-wrapper">
+                    <input class="form-control" id="username" name="tenDangNhap" placeholder="Chọn tên đăng nhập (ví dụ: khach03)..." required>
+                    <i class="bi bi-person-fill"></i>
+                </div>
+            </div>
+            
+            <div class="form-group" style="margin-bottom: 18px;">
+                <label class="form-label" for="password" style="font-size: 11px; margin-bottom: 6px;">Mật khẩu</label>
+                <div class="input-icon-wrapper">
+                    <input class="form-control" id="password" type="password" name="matKhau" placeholder="Nhập mật khẩu an toàn..." required>
+                    <i class="bi bi-lock-fill"></i>
+                </div>
+            </div>
+            
+            <div class="form-group" style="margin-bottom: 18px;">
+                <label class="form-label" for="fullName" style="font-size: 11px; margin-bottom: 6px;">Họ và tên</label>
+                <div class="input-icon-wrapper">
+                    <input class="form-control" id="fullName" name="hoTen" placeholder="Nhập họ tên đầy đủ..." required>
+                    <i class="bi bi-person-badge-fill"></i>
+                </div>
+            </div>
+            
+            <div class="form-group" style="margin-bottom: 18px;">
+                <label class="form-label" for="email" style="font-size: 11px; margin-bottom: 6px;">Địa chỉ Email</label>
+                <div class="input-icon-wrapper">
+                    <input class="form-control" id="email" type="email" name="email" placeholder="Nhập địa chỉ email của bạn..." required>
+                    <i class="bi bi-envelope-fill"></i>
+                </div>
+            </div>
+            
+            <div class="form-group" style="margin-bottom: 24px;">
+                <label class="form-label" for="phone" style="font-size: 11px; margin-bottom: 6px;">Số điện thoại</label>
+                <div class="input-icon-wrapper">
+                    <input class="form-control" id="phone" name="soDienThoai" placeholder="Nhập số điện thoại liên hệ..." required>
+                    <i class="bi bi-telephone-fill"></i>
+                </div>
+            </div>
+            
+            <button class="btn btn-primary" type="submit" style="width: 100%; justify-content: center; padding: 13px; font-size: 14.5px; font-weight: 700; border-radius: var(--radius-default); background-color: var(--primary); transition: transform 0.2s ease;">
+                Đăng ký ngay <i class="bi bi-arrow-right" style="margin-left: 6px;"></i>
+            </button>
+        </form>
+        
+        <div style="border-top: 1px solid var(--surface-container); margin-top: 28px; padding-top: 20px; text-align: center; display: flex; flex-direction: column; gap: 14px;">
+            <div style="font-size: 13.5px; color: var(--on-surface-variant);">
+                Đã có tài khoản? 
+                <a th:href="@{/login}" style="color: var(--secondary); font-weight: 700; text-decoration: none; margin-left: 4px;">Đăng nhập ngay</a>
+            </div>
+            <div>
+                <a th:href="@{/}" style="font-size: 13px; color: var(--outline); text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; margin-top: 4px;" class="icon-link-hover">
+                    <i class="bi bi-arrow-left"></i> Quay lại trang chủ
+                </a>
+            </div>
+        </div>
+    </section>
+
+</main>
+
+<!-- Footer -->
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+</body>
+</html>

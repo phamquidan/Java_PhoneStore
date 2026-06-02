@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<!-- 1. Head Elements matching Figma specs -->
+<head th:fragment="html-head(title)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title}">TechSophist</title>
+    <!-- CSS & Bootstrap Icons -->
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        /* CSS for the premium dropdowns */
+        .admin-header-dropdown-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+        .admin-header-dropdown {
+            position: absolute;
+            top: 38px;
+            right: 0;
+            width: 320px;
+            background-color: var(--surface-container-lowest, #ffffff);
+            border: 1px solid var(--surface-container, #eceef0);
+            border-radius: var(--radius-md, 12px);
+            box-shadow: var(--shadow-level-2);
+            z-index: 1001;
+            display: none;
+            flex-direction: column;
+            padding: 12px 0;
+            text-align: left;
+            animation: dropdownFadeIn 0.15s ease-out;
+        }
+        @keyframes dropdownFadeIn {
+            from { opacity: 0; transform: translateY(-8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .admin-header-dropdown-title {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--outline, #76777d);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 6px 16px 10px;
+            border-bottom: 1px solid var(--surface-container-low, #f2f4f6);
+            font-family: inherit;
+        }
+        .admin-header-dropdown-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 10px 16px;
+            font-size: 13.5px;
+            color: var(--primary, #000000);
+            text-decoration: none;
+            font-weight: 500;
+            transition: background-color 0.2s;
+            cursor: pointer;
+        }
+        .admin-header-dropdown-item:hover {
+            background-color: var(--surface-container-low, #f2f4f6);
+        }
+        .admin-header-dropdown-icon {
+            font-size: 16px;
+            margin-top: 1px;
+        }
+        .admin-header-dropdown-text {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            text-align: left;
+        }
+        .admin-header-dropdown-desc {
+            font-size: 11px;
+            color: var(--outline, #76777d);
+            font-weight: 500;
+        }
+        .admin-header-trigger {
+            position: relative;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 34px;
+            height: 34px;
+            border-radius: var(--radius-full);
+            transition: var(--transition);
+        }
+        .admin-header-trigger:hover {
+            background-color: var(--surface-container-low);
+        }
+        .admin-header-trigger:hover i {
+            color: var(--primary) !important;
+        }
+    </style>
+    <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Toggle dropdowns cleanly
+        document.querySelectorAll(".admin-header-trigger").forEach(trigger => {
+            trigger.addEventListener("click", function(e) {
+                e.stopPropagation();
+                const dropdown = this.nextElementSibling;
+                if (dropdown && dropdown.classList.contains("admin-header-dropdown")) {
+                    const isVisible = dropdown.style.display === "flex";
+                    // Close all dropdowns
+                    document.querySelectorAll(".admin-header-dropdown").forEach(d => d.style.display = "none");
+                    // Toggle this one
+                    dropdown.style.display = isVisible ? "none" : "flex";
+                }
+            });
+        });
+        
+        // Close dropdowns on outside click
+        document.addEventListener("click", function() {
+            document.querySelectorAll(".admin-header-dropdown").forEach(d => d.style.display = "none");
+        });
+    });
+    </script>
+</head>
+
+<body>
+
+<!-- 2. Centered Header Navbar matching Figma exactly -->
+<header th:fragment="topbar" class="topbar">
+    <!-- Logo -->
+    <a th:href="@{/}" class="brand">TechSophist</a>
+    
+    <!-- Centered Links -->
+    <nav class="nav-links-centered">
+        <a th:href="@{/}" id="nav-home">Home</a>
+        <a th:href="@{/san-pham}" id="nav-phones">Phones</a>
+        <a th:href="@{/#brands-section}" id="nav-brands">Brands</a>
+        <a th:href="@{/san-pham}" id="nav-deals">Deals</a>
+    </nav>
+    
+    <!-- Right Icons & Search -->
+    <div class="nav-right">
+        <!-- Pill Search -->
+        <form method="get" th:action="@{/san-pham}" class="search-form-pill">
+            <i class="bi bi-search"></i>
+            <input type="text" name="q" placeholder="Search devices...">
+        </form>
+        
+        <!-- Cart Icon -->
+        <a th:href="@{/gio-hang}" class="icon-link" title="Giỏ hàng">
+            <i class="bi bi-cart3"></i>
+        </a>
+        
+        <!-- Account Icon -->
+        <div sec:authorize="isAuthenticated()" style="display: flex; gap: 16px; align-items: center;">
+            <a sec:authorize="hasRole('ADMIN')" th:href="@{/admin/dashboard}" class="btn btn-primary" style="padding: 6px 14px; font-size: 13px; font-weight: 700; border-radius: var(--radius-sm); border: none; display: inline-flex; align-items: center; gap: 6px; text-decoration: none;">
+                <i class="bi bi-shield-fill"></i> Admin Panel
+            </a>
+            <a sec:authorize="!hasRole('ADMIN')" th:href="@{/user/dashboard}" class="icon-link" title="Tài khoản cá nhân">
+                <i class="bi bi-person"></i>
+            </a>
+            <form method="post" th:action="@{/logout}" style="margin: 0; display: inline;">
+                <button type="submit" class="logout-mini-btn" title="Đăng xuất" style="background: none; border: none; color: var(--outline); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: var(--transition);">
+                    <i class="bi bi-box-arrow-right" style="font-size: 20px;"></i>
+                </button>
+            </form>
+        </div>
+        
+        <div sec:authorize="isAnonymous()">
+            <a th:href="@{/login}" class="icon-link" title="Đăng nhập">
+                <i class="bi bi-person"></i>
+            </a>
+        </div>
+    </div>
+</header>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const currentPath = window.location.pathname;
+    const currentHash = window.location.hash;
+    const navHome = document.getElementById("nav-home");
+    const navPhones = document.getElementById("nav-phones");
+    const navBrands = document.getElementById("nav-brands");
+    const navDeals = document.getElementById("nav-deals");
+    
+    const elements = [navHome, navPhones, navBrands, navDeals];
+    elements.forEach(el => { if (el) el.classList.remove("active"); });
+    
+    if (currentPath === "/") {
+        if (currentHash === "#brands-section") {
+            if (navBrands) navBrands.classList.add("active");
+        } else {
+            if (navHome) navHome.classList.add("active");
+        }
+    } else if (currentPath.startsWith("/san-pham")) {
+        if (navPhones) navPhones.classList.add("active");
+    }
+    
+    // Smooth scroll for Brands link
+    if (navBrands) {
+        navBrands.addEventListener("click", function(e) {
+            if (window.location.pathname === "/") {
+                e.preventDefault();
+                const target = document.getElementById("brands-section");
+                if (target) {
+                    target.scrollIntoView({ behavior: "smooth" });
+                    elements.forEach(el => { if (el) el.classList.remove("active"); });
+                    navBrands.classList.add("active");
+                    window.location.hash = "#brands-section";
+                }
+            }
+        });
+    }
+});
+</script>
+
+<!-- 6. Unified Admin Topbar Header with Premium Interactive Dropdowns -->
+<div th:fragment="admin-header(searchPlaceholder, searchInputId, searchOnKeyup)" 
+     style="display: flex; justify-content: space-between; align-items: center; background-color: var(--surface-container-lowest); padding: 16px 40px; border-bottom: 1px solid var(--surface-container); margin: -40px -40px 32px -40px; box-shadow: var(--shadow-sm); position: relative; z-index: 1000;">
+    
+    <!-- Left Search Input -->
+    <div style="position: relative; width: 360px;">
+        <i class="bi bi-search" style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--outline); font-size: 14px;"></i>
+        <input type="text" 
+               th:id="${searchInputId ?: 'admin-mock-search'}" 
+               th:placeholder="${searchPlaceholder ?: 'Search analytics, orders, or products...'}" 
+               th:data-search-action="${searchOnKeyup}"
+               onkeyup="const handler = this.getAttribute('data-search-action'); if(handler) { eval(handler); }"
+               style="width: 100%; padding: 10px 16px 10px 44px; border: none; background-color: var(--surface-container-low); border-radius: var(--radius-sm); font-size: 13.5px; outline: none; font-weight: 500; color: var(--primary);">
+    </div>
+    
+    <!-- Right Icons & Profile Container -->
+    <div style="display: flex; align-items: center; gap: 24px;">
+        <!-- Notification Bell -->
+        <div class="admin-header-dropdown-wrapper">
+            <div class="admin-header-trigger">
+                <i class="bi bi-bell" style="font-size: 18px; color: var(--outline);"></i>
+                <span style="position: absolute; top: 4px; right: 4px; width: 7px; height: 7px; background-color: var(--error); border-radius: var(--radius-full); border: 1.5px solid var(--surface-container-lowest);"></span>
+            </div>
+            
+            <!-- Notification Dropdown Menu -->
+            <div class="admin-header-dropdown">
+                <div class="admin-header-dropdown-title">Thông báo hệ thống</div>
+                <div class="admin-header-dropdown-item" onclick="alert('Chi tiết: Có 3 đơn hàng mới đang chờ xử lý từ khách hàng.')">
+                    <span class="admin-header-dropdown-icon">📦</span>
+                    <div class="admin-header-dropdown-text">
+                        <span style="font-weight: 700;">Đơn hàng mới chờ duyệt</span>
+                        <span class="admin-header-dropdown-desc">Có 3 đơn hàng mới phát sinh cần kiểm tra</span>
+                    </div>
+                </div>
+                <div class="admin-header-dropdown-item" onclick="alert('Chi tiết: Các sản phẩm Samsung Galaxy S23, iPhone 13 có số lượng < 10.')">
+                    <span class="admin-header-dropdown-icon">⚠️</span>
+                    <div class="admin-header-dropdown-text">
+                        <span style="font-weight: 700;">Cảnh báo tồn kho thấp</span>
+                        <span class="admin-header-dropdown-desc">5 sản phẩm sắp hết hàng trong kho</span>
+                    </div>
+                </div>
+                <div class="admin-header-dropdown-item" onclick="alert('Chi tiết: Sao lưu dữ liệu tự động định kỳ hoàn tất thành công.')">
+                    <span class="admin-header-dropdown-icon">✅</span>
+                    <div class="admin-header-dropdown-text">
+                        <span style="font-weight: 700;">Sao lưu dữ liệu hoàn tất</span>
+                        <span class="admin-header-dropdown-desc">Hệ thống sao lưu định kỳ lúc 04:00 AM</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Gear / Settings -->
+        <div class="admin-header-dropdown-wrapper">
+            <div class="admin-header-trigger">
+                <i class="bi bi-gear" style="font-size: 18px; color: var(--outline);"></i>
+            </div>
+            
+            <!-- Gear Dropdown Menu -->
+            <div class="admin-header-dropdown">
+                <div class="admin-header-dropdown-title">Cài đặt nhanh</div>
+                <div class="admin-header-dropdown-item" onclick="alert('Cấu hình hệ thống:\n- Phiên bản: TechSophist Admin v2.4.6\n- Đơn vị phát triển: TechSophist Dev Group.')">
+                    <span class="admin-header-dropdown-icon">⚙️</span>
+                    <div class="admin-header-dropdown-text">
+                        <span style="font-weight: 700;">Cấu hình hệ thống</span>
+                        <span class="admin-header-dropdown-desc">Thông tin phiên bản & nhà phát triển</span>
+                    </div>
+                </div>
+                <div class="admin-header-dropdown-item" onclick="alert('Chế độ bảo mật đang được bật ở mức CAO NHẤT (HTTPS, CSRF Protection, Spring Security 6.x).')">
+                    <span class="admin-header-dropdown-icon">🛡️</span>
+                    <div class="admin-header-dropdown-text">
+                        <span style="font-weight: 700;">Chế độ bảo mật: Cao</span>
+                        <span class="admin-header-dropdown-desc">Đang bảo vệ dữ liệu với mã hóa AES</span>
+                    </div>
+                </div>
+                <div class="admin-header-dropdown-item" onclick="alert('Đã xóa cache hệ thống thành công. Tốc độ tải trang được tối ưu hóa.')">
+                    <span class="admin-header-dropdown-icon">🔄</span>
+                    <div class="admin-header-dropdown-text">
+                        <span style="font-weight: 700;">Xóa bộ nhớ đệm (Cache)</span>
+                        <span class="admin-header-dropdown-desc">Giải phóng tài nguyên & làm mới dữ liệu</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Help / Question Circle -->
+        <div class="admin-header-dropdown-wrapper">
+            <div class="admin-header-trigger">
+                <i class="bi bi-question-circle" style="font-size: 18px; color: var(--outline);"></i>
+            </div>
+            
+            <!-- Help Dropdown Menu -->
+            <div class="admin-header-dropdown">
+                <div class="admin-header-dropdown-title">Trung tâm trợ giúp</div>
+                <div class="admin-header-dropdown-item" onclick="alert('Tài liệu hướng dẫn đang được mở ở tab mới...')">
+                    <span class="admin-header-dropdown-icon">📖</span>
+                    <div class="admin-header-dropdown-text">
+                        <span style="font-weight: 700;">Tài liệu hướng dẫn</span>
+                        <span class="admin-header-dropdown-desc">Tra cứu cách vận hành các tính năng</span>
+                    </div>
+                </div>
+                <div class="admin-header-dropdown-item" onclick="alert('Liên hệ đội ngũ kỹ thuật: support@techsophist.com.')">
+                    <span class="admin-header-dropdown-icon">💬</span>
+                    <div class="admin-header-dropdown-text">
+                        <span style="font-weight: 700;">Hỗ trợ kỹ thuật</span>
+                        <span class="admin-header-dropdown-desc">Gửi yêu cầu hỗ trợ 24/7 tới chuyên viên</span>
+                    </div>
+                </div>
+                <div class="admin-header-dropdown-item" onclick="alert('Tổng đài miễn cước: 1800 6868.')">
+                    <span class="admin-header-dropdown-icon">📞</span>
+                    <div class="admin-header-dropdown-text">
+                        <span style="font-weight: 700;">Hotline: 1800 6868</span>
+                        <span class="admin-header-dropdown-desc">Gọi điện trực tiếp để được giải đáp thắc mắc</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div style="width: 1px; height: 24px; background-color: var(--surface-container-high);"></div>
+        <div style="display: flex; align-items: center; gap: 12px; cursor: pointer;">
+            <div style="text-align: right;">
+                <div style="font-weight: 700; color: var(--primary); font-size: 13px;">Admin User</div>
+                <div style="font-size: 10px; color: var(--outline); font-weight: 700;" class="label-mono">SUPER ADMIN</div>
+            </div>
+            <div style="width: 36px; height: 36px; border-radius: var(--radius-full); overflow: hidden; border: 1px solid var(--surface-container);">
+                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=80&auto=format&fit=crop&q=80" style="width: 100%; height: 100%; object-fit: cover;">
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 3. Sidebar for Admin Panel -->
+<aside th:fragment="admin-sidebar(activePage)" style="width: 260px; background-color: var(--surface-container-lowest); border-right: 1px solid var(--surface-container); min-height: 100vh; padding: 32px 24px; flex-shrink: 0; display: flex; flex-direction: column; gap: 32px;">
+    <!-- Logo & Subtitle matching Figma exactly -->
+    <div>
+        <a th:href="@{/}" style="font-weight: 800; font-size: 24px; color: var(--primary); letter-spacing: -0.03em; text-decoration: none; display: block;">TechSophist</a>
+        <div style="font-size: 11px; color: var(--outline); font-weight: 700; letter-spacing: 0.03em; text-transform: uppercase; margin-top: 4px;">Admin Portal</div>
+    </div>
+    
+    <!-- Sidebar Navigation Links matching Figma exactly -->
+    <nav style="display: flex; flex-direction: column; gap: 8px; flex: 1;">
+        <!-- 1. Dashboard -->
+        <div style="display: flex; flex-direction: column; gap: 4px;">
+            <a style="display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-radius: var(--radius-sm); text-decoration: none; font-size: 14px; font-weight: 600; transition: var(--transition);" 
+               th:styleappend="${activePage == 'dashboard' ? 'background-color: var(--surface-container-low); color: var(--secondary); border-right: 4px solid var(--secondary); font-weight: 700;' : 'color: var(--on-surface-variant); background-color: transparent;'}"
+               th:href="@{/admin/dashboard}">
+                <span style="display: flex; align-items: center; gap: 12px;">
+                    <i class="bi bi-grid-fill" style="font-size: 16px;"></i> Dashboard
+                </span>
+                <i class="bi bi-chevron-down submenu-arrow" th:style="${activePage == 'dashboard' ? 'transform: rotate(180deg);' : ''}" style="font-size: 11px; transition: transform 0.2s;" onclick="toggleSubmenu('submenu-dashboard', event)"></i>
+            </a>
+            <div id="submenu-dashboard" th:style="${activePage == 'dashboard' ? 'display: flex;' : 'display: none;'}" style="padding-left: 36px; flex-direction: column; gap: 6px; margin-bottom: 6px;">
+                <a th:href="@{/admin/dashboard}" style="display: flex; align-items: center; gap: 8px; text-decoration: none; font-size: 13px; font-weight: 600; color: var(--secondary);">
+                    <span style="width: 5px; height: 5px; border-radius: var(--radius-full); background-color: var(--secondary);"></span> Tổng quan
+                </a>
+            </div>
+        </div>
+        
+        <!-- 2. Products -->
+        <div style="display: flex; flex-direction: column; gap: 4px;">
+            <a style="display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-radius: var(--radius-sm); text-decoration: none; font-size: 14px; font-weight: 600; transition: var(--transition);" 
+               th:styleappend="${activePage == 'sanpham' ? 'background-color: var(--surface-container-low); color: var(--secondary); border-right: 4px solid var(--secondary); font-weight: 700;' : 'color: var(--on-surface-variant); background-color: transparent;'}"
+               th:href="@{/san-pham/admin}">
+                <span style="display: flex; align-items: center; gap: 12px;">
+                    <i class="bi bi-phone" style="font-size: 16px;"></i> Products
+                </span>
+                <i class="bi bi-chevron-down submenu-arrow" th:style="${activePage == 'sanpham' ? 'transform: rotate(180deg);' : ''}" style="font-size: 11px; transition: transform 0.2s;" onclick="toggleSubmenu('submenu-products', event)"></i>
+            </a>
+            <div id="submenu-products" th:style="${activePage == 'sanpham' ? 'display: flex;' : 'display: none;'}" style="padding-left: 36px; flex-direction: column; gap: 6px; margin-bottom: 6px;">
+                <a th:href="@{/san-pham/admin}" style="display: flex; align-items: center; gap: 8px; text-decoration: none; font-size: 13px; font-weight: 600; color: var(--on-surface-variant);" onmouseover="this.style.color='var(--secondary)'" onmouseout="this.style.color='var(--on-surface-variant)'">
+                    <span style="width: 5px; height: 5px; border-radius: var(--radius-full); background-color: var(--outline-variant);"></span> Danh sách sản phẩm
+                </a>
+                <a th:href="@{/san-pham/admin/form}" style="display: flex; align-items: center; gap: 8px; text-decoration: none; font-size: 13px; font-weight: 600; color: var(--on-surface-variant);" onmouseover="this.style.color='var(--secondary)'" onmouseout="this.style.color='var(--on-surface-variant)'">
+                    <span style="width: 5px; height: 5px; border-radius: var(--radius-full); background-color: var(--outline-variant);"></span> Thêm sản phẩm
+                </a>
+            </div>
+        </div>
+        
+        <!-- 3. Orders -->
+        <div style="display: flex; flex-direction: column; gap: 4px;">
+            <a style="display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-radius: var(--radius-sm); text-decoration: none; font-size: 14px; font-weight: 600; transition: var(--transition);" 
+               th:styleappend="${activePage == 'donhang' ? 'background-color: var(--surface-container-low); color: var(--secondary); border-right: 4px solid var(--secondary); font-weight: 700;' : 'color: var(--on-surface-variant); background-color: transparent;'}"
+               th:href="@{/don-hang}">
+                <span style="display: flex; align-items: center; gap: 12px;">
+                    <i class="bi bi-receipt" style="font-size: 16px;"></i> Orders
+                </span>
+                <i class="bi bi-chevron-down submenu-arrow" th:style="${activePage == 'donhang' ? 'transform: rotate(180deg);' : ''}" style="font-size: 11px; transition: transform 0.2s;" onclick="toggleSubmenu('submenu-orders', event)"></i>
+            </a>
+            <div id="submenu-orders" th:style="${activePage == 'donhang' ? 'display: flex;' : 'display: none;'}" style="padding-left: 36px; flex-direction: column; gap: 6px; margin-bottom: 6px;">
+                <a th:href="@{/don-hang}" style="display: flex; align-items: center; gap: 8px; text-decoration: none; font-size: 13px; font-weight: 600; color: var(--on-surface-variant);" onmouseover="this.style.color='var(--secondary)'" onmouseout="this.style.color='var(--on-surface-variant)'">
+                    <span style="width: 5px; height: 5px; border-radius: var(--radius-full); background-color: var(--outline-variant);"></span> Danh sách hóa đơn
+                </a>
+            </div>
+        </div>
+        
+        <!-- 4. Customers -->
+        <div style="display: flex; flex-direction: column; gap: 4px;">
+            <a style="display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-radius: var(--radius-sm); text-decoration: none; font-size: 14px; font-weight: 600; transition: var(--transition);" 
+               th:styleappend="${activePage == 'khachhang' ? 'background-color: var(--surface-container-low); color: var(--secondary); border-right: 4px solid var(--secondary); font-weight: 700;' : 'color: var(--on-surface-variant); background-color: transparent;'}"
+               th:href="@{/admin/customers}">
+                <span style="display: flex; align-items: center; gap: 12px;">
+                    <i class="bi bi-people" style="font-size: 16px;"></i> Customers
+                </span>
+                <i class="bi bi-chevron-down submenu-arrow" th:style="${activePage == 'khachhang' ? 'transform: rotate(180deg);' : ''}" style="font-size: 11px; transition: transform 0.2s;" onclick="toggleSubmenu('submenu-customers', event)"></i>
+            </a>
+            <div id="submenu-customers" th:style="${activePage == 'khachhang' ? 'display: flex;' : 'display: none;'}" style="padding-left: 36px; flex-direction: column; gap: 6px; margin-bottom: 6px;">
+                <a th:href="@{/admin/customers}" style="display: flex; align-items: center; gap: 8px; text-decoration: none; font-size: 13px; font-weight: 600; color: var(--on-surface-variant);" onmouseover="this.style.color='var(--secondary)'" onmouseout="this.style.color='var(--on-surface-variant)'">
+                    <span style="width: 5px; height: 5px; border-radius: var(--radius-full); background-color: var(--outline-variant);"></span> Danh sách khách hàng
+                </a>
+            </div>
+        </div>
+        
+        <!-- 5. Inventory (mapped to loai-hang) -->
+        <div style="display: flex; flex-direction: column; gap: 4px;">
+            <a style="display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-radius: var(--radius-sm); text-decoration: none; font-size: 14px; font-weight: 600; transition: var(--transition);" 
+               th:styleappend="${activePage == 'loaihang' ? 'background-color: var(--surface-container-low); color: var(--secondary); border-right: 4px solid var(--secondary); font-weight: 700;' : 'color: var(--on-surface-variant); background-color: transparent;'}"
+               th:href="@{/loai-hang/admin}">
+                <span style="display: flex; align-items: center; gap: 12px;">
+                    <i class="bi bi-archive" style="font-size: 16px;"></i> Inventory
+                </span>
+                <i class="bi bi-chevron-down submenu-arrow" th:style="${activePage == 'loaihang' ? 'transform: rotate(180deg);' : ''}" style="font-size: 11px; transition: transform 0.2s;" onclick="toggleSubmenu('submenu-inventory', event)"></i>
+            </a>
+            <div id="submenu-inventory" th:style="${activePage == 'loaihang' ? 'display: flex;' : 'display: none;'}" style="padding-left: 36px; flex-direction: column; gap: 6px; margin-bottom: 6px;">
+                <a th:href="@{/loai-hang/admin}" style="display: flex; align-items: center; gap: 8px; text-decoration: none; font-size: 13px; font-weight: 600; color: var(--on-surface-variant);" onmouseover="this.style.color='var(--secondary)'" onmouseout="this.style.color='var(--on-surface-variant)'">
+                    <span style="width: 5px; height: 5px; border-radius: var(--radius-full); background-color: var(--outline-variant);"></span> Danh mục sản phẩm
+                </a>
+                <a th:href="@{/loai-hang/admin/form}" style="display: flex; align-items: center; gap: 8px; text-decoration: none; font-size: 13px; font-weight: 600; color: var(--on-surface-variant);" onmouseover="this.style.color='var(--secondary)'" onmouseout="this.style.color='var(--on-surface-variant)'">
+                    <span style="width: 5px; height: 5px; border-radius: var(--radius-full); background-color: var(--outline-variant);"></span> Thêm danh mục mới
+                </a>
+            </div>
+        </div>
+        
+        <!-- 6. Reports -->
+        <div style="display: flex; flex-direction: column; gap: 4px;">
+            <a style="display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-radius: var(--radius-sm); text-decoration: none; font-size: 14px; font-weight: 600; transition: var(--transition);" 
+               th:styleappend="${activePage == 'reports' ? 'background-color: var(--surface-container-low); color: var(--secondary); border-right: 4px solid var(--secondary); font-weight: 700;' : 'color: var(--on-surface-variant); background-color: transparent;'}"
+               th:href="@{/admin/reports}">
+                <span style="display: flex; align-items: center; gap: 12px;">
+                    <i class="bi bi-bar-chart-line" style="font-size: 16px;"></i> Reports
+                </span>
+                <i class="bi bi-chevron-down submenu-arrow" th:style="${activePage == 'reports' ? 'transform: rotate(180deg);' : ''}" style="font-size: 11px; transition: transform 0.2s;" onclick="toggleSubmenu('submenu-reports', event)"></i>
+            </a>
+            <div id="submenu-reports" th:style="${activePage == 'reports' ? 'display: flex;' : 'display: none;'}" style="padding-left: 36px; flex-direction: column; gap: 6px; margin-bottom: 6px;">
+                <a th:href="@{/admin/reports}" style="display: flex; align-items: center; gap: 8px; text-decoration: none; font-size: 13px; font-weight: 600; color: var(--on-surface-variant);" onmouseover="this.style.color='var(--secondary)'" onmouseout="this.style.color='var(--on-surface-variant)'">
+                    <span style="width: 5px; height: 5px; border-radius: var(--radius-full); background-color: var(--outline-variant);"></span> Báo cáo thống kê
+                </a>
+            </div>
+        </div>
+    </nav>
+    <script>
+    function toggleSubmenu(id, event) {
+        if (event) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+        const submenu = document.getElementById(id);
+        if (submenu) {
+            const isHidden = submenu.style.display === "none" || !submenu.style.display;
+            submenu.style.display = isHidden ? "flex" : "none";
+            
+            // Rotate arrow icon
+            const parent = submenu.parentElement.querySelector("a");
+            if (parent) {
+                const arrow = parent.querySelector(".submenu-arrow");
+                if (arrow) {
+                    arrow.style.transform = isHidden ? "rotate(180deg)" : "rotate(0deg)";
+                }
+            }
+        }
+    }
+    </script>
+    
+    <!-- User Profile block at bottom of sidebar matching Figma exactly -->
+    <div style="border-top: 1px solid var(--surface-container); padding-top: 18px; display: flex; align-items: center; gap: 12px; margin-top: auto;">
+        <div style="width: 38px; height: 38px; border-radius: var(--radius-full); overflow: hidden; border: 1.5px solid var(--surface-container); flex-shrink: 0;">
+            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=80&auto=format&fit=crop&q=80" style="width: 100%; height: 100%; object-fit: cover;">
+        </div>
+        <div style="display: flex; flex-direction: column; justify-content: center; flex: 1;">
+            <div style="font-weight: 700; color: var(--primary); font-size: 13.5px; line-height: 1.2;">Admin User</div>
+            <div style="font-size: 10px; color: var(--outline); font-weight: 700; letter-spacing: 0.05em;">SUPER ADMIN</div>
+        </div>
+        <!-- Logout Form -->
+        <form method="post" th:action="@{/logout}" style="margin: 0; display: inline-flex; align-items: center;">
+            <button type="submit" style="background: none; border: none; padding: 4px; color: var(--outline); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: var(--transition);" onmouseover="this.style.color='var(--error)'" onmouseout="this.style.color='var(--outline)'" title="Đăng xuất">
+                <i class="bi bi-box-arrow-right" style="font-size: 18px;"></i>
+            </button>
+        </form>
+    </div>
+</aside>
+
+<!-- 4. Top Information Bar / Hero Banner Split matching Figma exactly -->
+<div th:fragment="welcome-hero" class="hero-split">
+    <!-- Left Info -->
+    <div class="hero-content">
+        <span class="tag-new-release">New Release</span>
+        <h1 class="hero-title">iPhone 15 Pro.<br>Forged in Titanium.</h1>
+        <p class="hero-subtitle">The first iPhone with an aerospace-grade titanium design, using the same alloy that spacecraft use for missions to Mars.</p>
+        <div class="actions">
+            <a class="btn btn-primary" th:href="@{/san-pham}">Buy Now</a>
+            <a class="btn btn-secondary" th:href="@{/san-pham/2}">Learn More</a>
+        </div>
+    </div>
+    
+    <!-- Right Image -->
+    <div class="hero-image-container">
+        <!-- Render a stunning mock iPhone image -->
+        <img src="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=450&auto=format&fit=crop&q=80" alt="iPhone 15 Pro Titanium Mock">
+    </div>
+</div>
+
+<!-- 5. 4-Column Footer Section matching Figma exactly -->
+<footer th:fragment="footer" class="footer-sophist">
+    <div class="footer-grid">
+        <!-- Col 1: Brand info -->
+        <div class="footer-col">
+            <a th:href="@{/}" class="brand">TechSophist</a>
+            <p style="color: var(--on-surface-variant); line-height: 1.6; margin-top: 8px;">
+                Pioneering the next generation of mobile computing with sophisticated design and high-performance hardware.
+            </p>
+            <div style="display: flex; gap: 16px; font-size: 18px; color: var(--on-surface-variant); margin-top: 12px;">
+                <i class="bi bi-globe"></i>
+                <i class="bi bi-instagram"></i>
+                <i class="bi bi-twitter-x"></i>
+            </div>
+        </div>
+        
+        <!-- Col 2: Shop links -->
+        <div class="footer-col">
+            <h5>Shop</h5>
+            <ul class="footer-links-list">
+                <li><a th:href="@{/san-pham}">Smartphones</a></li>
+                <li><a th:href="@{/san-pham(loaiId=3)}">Tablets</a></li>
+                <li><a th:href="@{/san-pham(loaiId=4)}">Wearables</a></li>
+                <li><a th:href="@{/san-pham(loaiId=6)}">Accessories</a></li>
+            </ul>
+        </div>
+        
+        <!-- Col 3: Support links -->
+        <div class="footer-col">
+            <h5>Support</h5>
+            <ul class="footer-links-list">
+                <li><a href="javascript:void(0)" onclick="alert('Chương trình Giao hàng Hỏa tốc áp dụng miễn phí cho các hóa đơn trên 10 triệu đồng tại khu vực nội thành. Hỗ trợ giao nhanh 2h!')">Shipping Info</a></li>
+                <li><a href="javascript:void(0)" onclick="alert('Chính sách bảo hành vàng của TechSophist: Lỗi 1 đổi 1 trong 30 ngày đầu, bảo hành phần cứng 2 năm tại tất cả trung tâm bảo hành ủy quyền.')">Warranty</a></li>
+                <li><a th:href="@{/user/dashboard}">Order Status</a></li>
+                <li><a href="javascript:void(0)" onclick="alert('Tổng đài hỗ trợ 24/7 TechSophist: 1800 6868 (miễn phí). Địa chỉ: 123 Đường Công Nghệ, Quận 1, TP. HCM.')">Contact Us</a></li>
+            </ul>
+        </div>
+        
+        <!-- Col 4: Newsletter -->
+        <div class="footer-col">
+            <h5>Newsletter</h5>
+            <p style="color: var(--on-surface-variant); line-height: 1.6;">
+                Subscribe to get special offers and first look at new arrivals.
+            </p>
+            <form class="newsletter-form" onsubmit="event.preventDefault(); alert('Đăng ký nhận tin thành công!');">
+                <input class="newsletter-input" type="email" placeholder="Email address" required>
+                <button class="btn btn-primary" type="submit" style="padding: 10px 16px; font-size: 13px;">Join</button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Footer bottom bar -->
+    <div class="footer-bottom-bar">
+        <div>© 2026 TechSophist Premium Mobile Retail. All rights reserved.</div>
+        <div style="display: flex; gap: 20px; font-size: 18px;">
+            <i class="bi bi-credit-card"></i>
+            <i class="bi bi-paypal"></i>
+            <i class="bi bi-stripe"></i>
+        </div>
+    </div>
+</footer>
+
+</body>
+</html>

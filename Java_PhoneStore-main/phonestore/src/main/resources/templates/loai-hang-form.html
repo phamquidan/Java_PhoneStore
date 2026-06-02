@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: html-head('Thêm/Sửa loại hàng - TechSophist')}"></head>
+<body style="background-color: var(--surface); min-height: 100vh; display: flex; flex-direction: row;">
+
+<!-- Sidebar Navigation -->
+<aside th:replace="~{fragments/layout :: admin-sidebar('loaihang')}"></aside>
+
+<!-- Main Workspace Panel -->
+<main style="flex: 1; padding: 40px; display: flex; flex-direction: column; gap: 32px; overflow-y: auto;">
+    
+    <!-- Topbar heading -->
+    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--surface-container); padding-bottom: 20px;">
+        <div>
+            <div class="label-mono" style="color: var(--secondary); font-weight: 700; margin-bottom: 4px;">Khu vực quản trị</div>
+            <h1 class="display-lg" style="margin-bottom: 0; font-size: 32px;">Thông tin loại hàng</h1>
+        </div>
+        
+        <a class="btn btn-secondary" th:href="@{/loai-hang/admin}">
+            <i class="bi bi-chevron-left"></i> Quay lại danh sách
+        </a>
+    </div>
+
+    <!-- Category Form Card -->
+    <section class="card" style="padding: 40px; max-width: 600px; border-radius: var(--radius-lg); box-shadow: var(--shadow-level-1);">
+        <h3 class="headline-sm" style="margin-bottom: 24px; border-bottom: 1px solid var(--surface-container); padding-bottom: 12px;">Chi tiết danh mục</h3>
+        
+        <form method="post" th:action="@{/loai-hang/admin/save}" th:object="${loaiHang}" style="display: flex; flex-direction: column; gap: 24px;">
+            <!-- Hidden ID field for edit mode -->
+            <input type="hidden" th:field="*{id}">
+
+            <!-- Category Name -->
+            <div class="form-group">
+                <label class="form-label" for="category-name">Tên loại hàng <span style="color: var(--error);">*</span></label>
+                <input class="form-control" id="category-name" th:field="*{tenLoai}" placeholder="Ví dụ: Phụ kiện điện thoại, Máy tính bảng..." required>
+            </div>
+
+            <!-- Submit buttons area -->
+            <div style="display: flex; justify-content: flex-end; gap: 16px; border-top: 1px solid var(--surface-container); padding-top: 24px; margin-top: 12px;">
+                <a class="btn btn-secondary" th:href="@{/loai-hang/admin}">Huỷ bỏ</a>
+                <button class="btn btn-action" type="submit" style="padding: 12px 28px; font-size: 15px;">
+                    <i class="bi bi-save2-fill"></i> Lưu loại hàng
+                </button>
+            </div>
+        </form>
+    </section>
+
+</main>
+
+</body>
+</html>

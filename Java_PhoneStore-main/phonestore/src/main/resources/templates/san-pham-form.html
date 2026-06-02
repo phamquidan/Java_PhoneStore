@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: html-head('Thêm/Sửa sản phẩm - TechSophist')}"></head>
+<body style="background-color: var(--surface); min-height: 100vh; display: flex; flex-direction: row;">
+
+<!-- Sidebar Navigation -->
+<aside th:replace="~{fragments/layout :: admin-sidebar('sanpham')}"></aside>
+
+<!-- Main Workspace Panel -->
+<main style="flex: 1; padding: 40px; display: flex; flex-direction: column; gap: 32px; overflow-y: auto;">
+    
+    <!-- Topbar heading -->
+    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--surface-container); padding-bottom: 20px;">
+        <div>
+            <div class="label-mono" style="color: var(--secondary); font-weight: 700; margin-bottom: 4px;">Khu vực quản trị</div>
+            <h1 class="display-lg" style="margin-bottom: 0; font-size: 32px;">Thông tin sản phẩm</h1>
+        </div>
+        
+        <a class="btn btn-secondary" th:href="@{/san-pham/admin}">
+            <i class="bi bi-chevron-left"></i> Quay lại danh sách
+        </a>
+    </div>
+
+    <!-- Product Form Card -->
+    <section class="card" style="padding: 40px; max-width: 900px; border-radius: var(--radius-lg); box-shadow: var(--shadow-level-1);">
+        <h3 class="headline-sm" style="margin-bottom: 24px; border-bottom: 1px solid var(--surface-container); padding-bottom: 12px;">Chi tiết thiết bị</h3>
+        
+        <form method="post" th:action="@{/san-pham/admin/save}" th:object="${sanPham}" style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+            <!-- Hidden ID field for edit mode -->
+            <input type="hidden" th:field="*{id}">
+
+            <!-- Column 1 -->
+            <div style="display: flex; flex-direction: column; gap: 20px;">
+                <!-- Product Name -->
+                <div class="form-group">
+                    <label class="form-label" for="product-name">Tên dòng sản phẩm <span style="color: var(--error);">*</span></label>
+                    <input class="form-control" id="product-name" th:field="*{tenSanPham}" placeholder="Ví dụ: iPhone 15 Pro Max..." required>
+                </div>
+
+                <!-- Price -->
+                <div class="form-group">
+                    <label class="form-label" for="product-price">Giá bán (VND) <span style="color: var(--error);">*</span></label>
+                    <input class="form-control" id="product-price" type="number" step="0.01" th:field="*{gia}" placeholder="Ví dụ: 34990000..." required>
+                </div>
+
+                <!-- Import Price -->
+                <div class="form-group">
+                    <label class="form-label" for="product-import-price">Giá nhập hàng (VND)</label>
+                    <input class="form-control" id="product-import-price" type="number" step="0.01" th:field="*{giaNhap}" placeholder="Ví dụ: 30000000...">
+                </div>
+
+                <!-- Category -->
+                <div class="form-group">
+                    <label class="form-label" for="product-category">Loại sản phẩm <span style="color: var(--error);">*</span></label>
+                    <select class="form-control" id="product-category" th:field="*{loaiHang.id}" required>
+                        <option value="">Chọn loại hàng...</option>
+                        <option th:each="lh : ${loaiHangs}" th:value="${lh.id}" th:text="${lh.tenLoai}"></option>
+                    </select>
+                </div>
+
+                <!-- Manufacturer -->
+                <div class="form-group">
+                    <label class="form-label" for="product-manufacturer">Nhà sản xuất <span style="color: var(--error);">*</span></label>
+                    <select class="form-control" id="product-manufacturer" th:field="*{nhaSanXuat.id}" required>
+                        <option value="">Chọn nhà sản xuất...</option>
+                        <option th:each="nsx : ${nhaSanXuats}" th:value="${nsx.id}" th:text="${nsx.tenNhaSanXuat}"></option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Column 2 -->
+            <div style="display: flex; flex-direction: column; gap: 20px;">
+                <!-- Stock -->
+                <div class="form-group">
+                    <label class="form-label" for="product-stock">Số lượng tồn kho</label>
+                    <input class="form-control" id="product-stock" type="number" th:field="*{soLuongTon}" placeholder="Ví dụ: 20...">
+                </div>
+
+                <!-- UoM (DVT) -->
+                <div class="form-group">
+                    <label class="form-label" for="product-dvt">Đơn vị tính</label>
+                    <input class="form-control" id="product-dvt" th:field="*{dvt}" placeholder="Ví dụ: Cái...">
+                </div>
+
+                <!-- Image URL -->
+                <div class="form-group">
+                    <label class="form-label" for="product-image">Hình ảnh đại diện (Tên file)</label>
+                    <input class="form-control" id="product-image" th:field="*{anhUrl}" placeholder="Ví dụ: iphone15promax.jpg...">
+                </div>
+
+                <!-- Description -->
+                <div class="form-group" style="grid-column: span 2;">
+                    <label class="form-label" for="product-description">Mô tả sản phẩm</label>
+                    <textarea class="form-control" id="product-description" th:field="*{moTa}" rows="4" placeholder="Nhập cấu hình, đặc điểm nổi bật của thiết bị..."></textarea>
+                </div>
+            </div>
+
+            <!-- Submit buttons area -->
+            <div style="grid-column: span 2; display: flex; justify-content: flex-end; gap: 16px; border-top: 1px solid var(--surface-container); padding-top: 24px; margin-top: 12px;">
+                <a class="btn btn-secondary" th:href="@{/san-pham/admin}">Huỷ bỏ</a>
+                <button class="btn btn-action" type="submit" style="padding: 12px 28px; font-size: 15px;">
+                    <i class="bi bi-save2-fill"></i> Lưu sản phẩm
+                </button>
+            </div>
+        </form>
+    </section>
+
+</main>
+
+</body>
+</html>

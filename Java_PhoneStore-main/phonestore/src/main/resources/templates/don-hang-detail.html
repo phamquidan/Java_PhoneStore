@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: html-head('Chi tiết đơn hàng - TechSophist')}"></head>
+<body>
+
+<!-- Header Navigation -->
+<header th:replace="~{fragments/layout :: topbar}"></header>
+
+<!-- Main Container -->
+<main class="container">
+    
+    <div style="margin-bottom: 32px; display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 16px;">
+        <div>
+            <div class="label-mono" style="color: var(--secondary); font-weight: 700; margin-bottom: 4px;" th:text="'Mã giao dịch: HD-' + ${donHang.id}">HD-1</div>
+            <h1 class="display-lg" style="margin-bottom: 0;">Thông tin đơn hàng</h1>
+        </div>
+        
+        <div class="actions">
+            <a class="btn btn-action" th:href="@{'/don-hang/' + ${donHang.id} + '/invoice'}">
+                <i class="bi bi-printer"></i> Xem hóa đơn in ấn
+            </a>
+            <a class="btn btn-secondary" th:href="@{/don-hang}">
+                <i class="bi bi-arrow-left"></i> Lịch sử đơn hàng
+            </a>
+        </div>
+    </div>
+
+    <div th:if="${donHang}" style="display: grid; grid-template-columns: 1fr 1.5fr; gap: 32px; align-items: start;">
+        
+        <!-- Left: Customer & Payment Details -->
+        <div class="card" style="padding: 28px; border-radius: var(--radius-lg);">
+            <h3 class="headline-sm" style="margin-bottom: 20px; border-bottom: 1px solid var(--surface-container); padding-bottom: 12px;">
+                <i class="bi bi-info-circle-fill" style="color: var(--secondary);"></i> Thông tin chung
+            </h3>
+            
+            <div style="display: flex; flex-direction: column; gap: 16px;">
+                <!-- Status -->
+                <div>
+                    <div class="label-mono" style="color: var(--outline); font-size: 11px; margin-bottom: 4px;">Trạng thái đơn hàng</div>
+                    <div>
+                        <span class="badge badge-pending" th:if="${donHang.trangThai == 'PENDING' || donHang.trangThai == 'Chờ thanh toán'}">
+                            <i class="bi bi-clock-history"></i> Chờ thanh toán
+                        </span>
+                        <span class="badge badge-success" th:if="${donHang.trangThai == 'PAID' || donHang.trangThai == 'Hoàn thành'}">
+                            <i class="bi bi-check-circle-fill"></i> Hoàn thành
+                        </span>
+                        <span class="badge badge-danger" th:if="${donHang.trangThai == 'CANCELLED' || donHang.trangThai == 'Đã hủy'}">
+                            <i class="bi bi-x-circle-fill"></i> Đã hủy
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Customer Details -->
+                <div>
+                    <div class="label-mono" style="color: var(--outline); font-size: 11px; margin-bottom: 4px;">Khách hàng</div>
+                    <div style="font-weight: 700; color: var(--primary);" th:text="${donHang.khachHang.hoTen}">Lê Văn A</div>
+                    <div class="body-sm" style="margin-top: 4px;">
+                        <i class="bi bi-telephone"></i> <span th:text="${donHang.khachHang.soDienThoai}"></span><br>
+                        <i class="bi bi-envelope"></i> <span th:text="${donHang.khachHang.email}"></span><br>
+                        <i class="bi bi-geo-alt"></i> <span th:text="${donHang.khachHang.diaChi}"></span>
+                    </div>
+                </div>
+
+                <!-- Payment Details -->
+                <div>
+                    <div class="label-mono" style="color: var(--outline); font-size: 11px; margin-bottom: 4px;">Thông tin thanh toán</div>
+                    <div class="body-sm">
+                        Phương thức: <b th:text="${donHang.phuongThucThanhToan != null ? donHang.phuongThucThanhToan : 'Tiền mặt'}"></b><br>
+                        Ngày giao dịch: <span th:text="${#temporals.format(donHang.ngayDat, 'dd/MM/yyyy HH:mm')}"></span>
+                    </div>
+                </div>
+
+                <!-- Handling Staff -->
+                <div th:if="${donHang.nhanVien}">
+                    <div class="label-mono" style="color: var(--outline); font-size: 11px; margin-bottom: 4px;">Nhân viên xử lý</div>
+                    <div class="body-sm" th:text="${donHang.nhanVien.hoTen}">Nguyễn Văn Nhân Viên</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Right: Order Items List -->
+        <div>
+            <div class="table-responsive" style="margin-bottom: 24px;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Sản phẩm</th>
+                            <th style="text-align: right;">Đơn giá</th>
+                            <th style="text-align: center; width: 100px;">Số lượng</th>
+                            <th style="text-align: right; width: 160px;">Thành tiền</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="item : ${items}">
+                            <!-- Product Details -->
+                            <td>
+                                <div style="font-weight: 700; color: var(--primary);" th:text="${item.sanPham.tenSanPham}">Tên điện thoại</div>
+                                <div style="font-size: 11px; color: var(--outline); text-transform: uppercase; font-weight: 600;" th:text="${item.sanPham.loaiHang.tenLoai}">Thương hiệu</div>
+                            </td>
+                            
+                            <!-- Unit Price -->
+                            <td style="text-align: right; font-weight: 500;" th:text="${#numbers.formatDecimal(item.donGia, 0, 'COMMA', 0, 'POINT') + ' đ'}">
+                                29.990.000 đ
+                            </td>
+                            
+                            <!-- Quantity -->
+                            <td style="text-align: center; font-weight: 700; color: var(--on-surface-variant);" th:text="${item.soLuong}">
+                                1
+                            </td>
+                            
+                            <!-- Subtotal -->
+                            <td style="text-align: right; font-weight: 700; color: var(--secondary);" th:text="${#numbers.formatDecimal(item.donGia * item.soLuong, 0, 'COMMA', 0, 'POINT') + ' đ'}">
+                                29.990.000 đ
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Summary box -->
+            <div class="card" style="padding: 24px 32px; border-radius: var(--radius-lg); background-color: var(--surface-container-low); border: none; box-shadow: none;">
+                <div style="display: flex; justify-content: space-between; align-items: flex-end;">
+                    <div>
+                        <div class="label-mono" style="color: var(--outline); font-size: 11px; margin-bottom: 4px;">Tổng tiền hóa đơn</div>
+                        <p class="body-sm" style="color: var(--on-surface-variant); margin-bottom: 0;">Đã bao gồm thuế GTGT và phí vận chuyển tiêu chuẩn</p>
+                    </div>
+                    <div style="font-size: 26px; font-weight: 800; color: var(--secondary);" th:text="${#numbers.formatDecimal(donHang.tongTien, 0, 'COMMA', 0, 'POINT') + ' VND'}">
+                        29.990.000 VND
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+
+    <!-- Error state -->
+    <div class="card" th:if="${donHang == null}" style="text-align: center; padding: 60px;">
+        <i class="bi bi-exclamation-octagon" style="font-size: 48px; color: var(--error); display: block; margin-bottom: 16px;"></i>
+        <h3 class="headline-sm">Không tìm thấy đơn hàng</h3>
+        <p class="body-sm" style="color: var(--outline);">Đơn hàng bạn đang tìm kiếm không tồn tại hoặc bạn không có quyền xem.</p>
+        <a class="btn btn-primary" th:href="@{/don-hang}" style="margin-top: 16px;">
+            Quay lại lịch sử
+        </a>
+    </div>
+
+</main>
+
+<!-- Footer -->
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+</body>
+</html>

@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: html-head('Xác nhận đặt hàng - TechSophist')}"></head>
+<body>
+
+<!-- Header Navigation -->
+<header th:replace="~{fragments/layout :: topbar}"></header>
+
+<!-- Main Container -->
+<main class="container">
+    
+    <div style="margin-bottom: 32px;">
+        <div class="label-mono" style="color: var(--secondary); font-weight: 700; margin-bottom: 4px;">Bước cuối cùng</div>
+        <h1 class="display-lg">Xác nhận thanh toán</h1>
+    </div>
+
+    <!-- Active Cart Items Layout -->
+    <form th:action="@{/don-hang/tao}" method="post" id="checkout-form" style="display: grid; grid-template-columns: 1.8fr 1.2fr; gap: 32px; align-items: start;">
+        
+        <!-- Left: Shipping Form -->
+        <div class="card" style="padding: 40px; border-radius: var(--radius-lg); box-shadow: var(--shadow-level-1);">
+            <h3 class="headline-sm" style="margin-bottom: 24px; border-bottom: 1px solid var(--surface-container); padding-bottom: 12px;">
+                <i class="bi bi-truck" style="color: var(--secondary); margin-right: 8px;"></i> Thông tin nhận hàng
+            </h3>
+            
+            <div style="display: flex; flex-direction: column; gap: 20px;">
+                <!-- Fullname -->
+                <div>
+                    <label class="label-mono" style="color: var(--outline); font-size: 11px; display: block; margin-bottom: 8px;">Họ và tên người nhận</label>
+                    <input type="text" name="hoTen" th:value="${user != null ? user.hoTen : ''}" class="form-control" style="font-weight: 600; color: var(--primary);" placeholder="Nhập tên đầy đủ người nhận..." required>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                    <!-- Phone -->
+                    <div>
+                        <label class="label-mono" style="color: var(--outline); font-size: 11px; display: block; margin-bottom: 8px;">Số điện thoại</label>
+                        <input type="text" id="checkout-sdt" name="soDienThoai" th:value="${user != null ? user.soDienThoai : ''}" class="form-control" style="font-weight: 600; color: var(--primary);" placeholder="Nhập số điện thoại nhận hàng..." required>
+                    </div>
+                    
+                    <!-- Email -->
+                    <div>
+                        <label class="label-mono" style="color: var(--outline); font-size: 11px; display: block; margin-bottom: 8px;">Địa chỉ Email</label>
+                        <input type="email" id="checkout-email" name="email" th:value="${user != null ? user.email : ''}" class="form-control" style="font-weight: 600; color: var(--primary);" placeholder="name@example.com" required>
+                    </div>
+                </div>
+
+                <!-- Address -->
+                <div>
+                    <label class="label-mono" style="color: var(--outline); font-size: 11px; display: block; margin-bottom: 8px;">Địa chỉ giao hàng</label>
+                    <input type="text" id="checkout-diachi" name="diaChi" th:value="${user != null ? user.diaChi : ''}" class="form-control" placeholder="Số nhà, tên đường, phường/xã, quận/huyện, tỉnh/thành phố..." style="font-weight: 600; color: var(--primary);" required>
+                </div>
+            </div>
+
+            <!-- Payment Method Card Group -->
+            <h3 class="headline-sm" style="margin-top: 40px; margin-bottom: 24px; border-bottom: 1px solid var(--surface-container); padding-bottom: 12px;">
+                <i class="bi bi-wallet2" style="color: var(--secondary); margin-right: 8px;"></i> Phương thức thanh toán
+            </h3>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                
+                <!-- COD Payment -->
+                <label style="cursor: pointer; margin: 0;">
+                    <input type="radio" name="phuongThucThanhToan" value="Tiền mặt" checked style="display: none;" onchange="updatePaymentUI(this)">
+                    <div id="cod-card" class="card" style="padding: 24px; border: 2px solid var(--secondary); border-radius: var(--radius-md); text-align: center; background-color: var(--surface-container-lowest); transition: var(--transition);">
+                        <i class="bi bi-cash-stack" style="font-size: 32px; color: var(--secondary); display: block; margin-bottom: 12px;"></i>
+                        <h4 class="headline-xs" style="margin-bottom: 4px; color: var(--primary);">Tiền mặt (COD)</h4>
+                        <p class="body-sm" style="color: var(--outline); font-size: 11px; margin-bottom: 0;">Thanh toán trực tiếp khi nhận hàng</p>
+                    </div>
+                </label>
+                
+                <!-- Bank Transfer -->
+                <label style="cursor: pointer; margin: 0;">
+                    <input type="radio" name="phuongThucThanhToan" value="Chuyển khoản" style="display: none;" onchange="updatePaymentUI(this)">
+                    <div id="transfer-card" class="card" style="padding: 24px; border: 2px solid var(--surface-container); border-radius: var(--radius-md); text-align: center; background-color: var(--surface-container-lowest); transition: var(--transition);">
+                        <i class="bi bi-qr-code-scan" style="font-size: 32px; color: var(--outline); display: block; margin-bottom: 12px;"></i>
+                        <h4 class="headline-xs" style="margin-bottom: 4px; color: var(--outline);">Chuyển khoản</h4>
+                        <p class="body-sm" style="color: var(--outline); font-size: 11px; margin-bottom: 0;">Quét mã VietQR chuyển khoản nhanh</p>
+                    </div>
+                </label>
+            </div>
+        </div>
+        
+        <!-- Right: Summary Panel -->
+        <div class="card" style="padding: 28px; border-radius: var(--radius-lg); box-shadow: var(--shadow-level-1);">
+            <h3 class="headline-sm" style="margin-bottom: 20px; border-bottom: 1px solid var(--surface-container); padding-bottom: 12px;">Đơn hàng</h3>
+            
+            <!-- Items scroll list -->
+            <div style="max-height: 240px; overflow-y: auto; margin-bottom: 24px; display: flex; flex-direction: column; gap: 12px;">
+                <div th:each="item : ${items}" style="display: flex; gap: 12px; align-items: center; padding-bottom: 12px; border-bottom: 1px solid var(--surface-container-low);">
+                    <div style="width: 44px; height: 44px; background-color: var(--surface-container-low); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; overflow: hidden; border: 1px solid var(--surface-container);">
+                        <img th:if="${item.sanPham.anhUrl != null}" th:src="@{'/images/' + ${item.sanPham.anhUrl}}" th:alt="${item.sanPham.tenSanPham}" style="max-height: 85%; max-width: 85%; object-fit: contain;"
+                             onerror="if (this.alt.toLowerCase().includes('airpods') || this.alt.toLowerCase().includes('tai nghe')) { this.src='https://images.unsplash.com/photo-1588449668365-d15e397f6787?w=100&auto=format&fit=crop&q=60'; } else if (this.alt.toLowerCase().includes('samsung')) { this.src='https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=100&auto=format&fit=crop&q=60'; } else { this.src='https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=100&auto=format&fit=crop&q=60'; }">
+                        <img th:if="${item.sanPham.anhUrl == null}" src="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=100&auto=format&fit=crop&q=60" style="max-height: 85%; max-width: 85%; object-fit: contain;">
+                    </div>
+                    <div style="flex: 1; min-width: 0;">
+                        <div style="font-weight: 700; color: var(--primary); font-size: 13px; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;" th:text="${item.sanPham.tenSanPham}">Sản phẩm</div>
+                        <div style="font-size: 11px; color: var(--outline);" th:text="${item.soLuong} + ' x ' + ${#numbers.formatDecimal(item.sanPham.gia, 0, 'COMMA', 0, 'POINT')} + ' đ'">1 x 29.990.000 đ</div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; margin-bottom: 16px; font-size: 14px;">
+                <span style="color: var(--on-surface-variant);">Tạm tính:</span>
+                <span style="font-weight: 600; color: var(--on-surface);" th:text="${#numbers.formatDecimal(total, 0, 'COMMA', 0, 'POINT') + ' đ'}">29.990.000 đ</span>
+            </div>
+            
+            <div style="display: flex; justify-content: space-between; margin-bottom: 16px; font-size: 14px;">
+                <span style="color: var(--on-surface-variant);">Vận chuyển:</span>
+                <span style="font-weight: 600; color: var(--success);">Miễn phí</span>
+            </div>
+            
+            <div style="border-top: 1.5px dashed var(--surface-container); margin: 20px 0; padding-top: 16px; display: flex; justify-content: space-between; align-items: flex-end;">
+                <span class="label-mono" style="color: var(--outline); font-size: 11px;">Tổng thanh toán</span>
+                <span style="font-size: 22px; font-weight: 800; color: var(--secondary);" th:text="${#numbers.formatDecimal(total, 0, 'COMMA', 0, 'POINT') + ' đ'}">29.990.000 đ</span>
+            </div>
+            
+            <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 24px;">
+                <button type="submit" id="submit-btn" class="btn btn-action" style="width: 100%; padding: 14px; justify-content: center; font-size: 15px;">
+                    <i class="bi bi-check-circle-fill"></i> <span id="btn-text">Xác nhận và đặt hàng</span>
+                </button>
+                <a class="btn btn-secondary" th:href="@{/gio-hang}" style="width: 100%; padding: 12px; justify-content: center;">
+                    <i class="bi bi-chevron-left"></i> Quay lại giỏ hàng
+                </a>
+            </div>
+        </div>
+        
+    </form>
+
+</main>
+
+<!-- Footer -->
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+<script>
+    function updatePaymentUI(radio) {
+        const codCard = document.getElementById('cod-card');
+        const transferCard = document.getElementById('transfer-card');
+        const submitBtn = document.getElementById('submit-btn');
+        const btnText = document.getElementById('btn-text');
+
+        if (radio.value === 'Tiền mặt') {
+            // COD Card active
+            codCard.style.borderColor = 'var(--secondary)';
+            codCard.querySelector('i').style.color = 'var(--secondary)';
+            codCard.querySelector('h4').style.color = 'var(--primary)';
+            
+            // Transfer Card inactive
+            transferCard.style.borderColor = 'var(--surface-container)';
+            transferCard.querySelector('i').style.color = 'var(--outline)';
+            transferCard.querySelector('h4').style.color = 'var(--outline)';
+            
+            // Button label
+            btnText.textContent = 'Xác nhận và đặt hàng';
+        } else {
+            // Transfer Card active
+            transferCard.style.borderColor = 'var(--secondary)';
+            transferCard.querySelector('i').style.color = 'var(--secondary)';
+            transferCard.querySelector('h4').style.color = 'var(--primary)';
+            
+            // COD Card inactive
+            codCard.style.borderColor = 'var(--surface-container)';
+            codCard.querySelector('i').style.color = 'var(--outline)';
+            codCard.querySelector('h4').style.color = 'var(--outline)';
+            
+            // Button label
+            btnText.textContent = 'Xác nhận và chuyển khoản';
+        }
+    }
+
+    document.getElementById('checkout-form').addEventListener('submit', function(e) {
+        const sdt = document.getElementById('checkout-sdt').value.trim();
+        const email = document.getElementById('checkout-email').value.trim();
+        const diachi = document.getElementById('checkout-diachi').value.trim();
+        const isCOD = document.querySelector('input[name="phuongThucThanhToan"]:checked').value === 'Tiền mặt';
+
+        if (isCOD) {
+            if (!sdt || !email || !diachi) {
+                e.preventDefault();
+                alert('Vui lòng điền đầy đủ số điện thoại, địa chỉ nhận hàng và email để thanh toán Tiền mặt (COD)!');
+                return false;
+            }
+        }
+    });
+</script>
+
+</body>
+</html>

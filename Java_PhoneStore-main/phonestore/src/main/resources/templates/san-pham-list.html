@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: html-head('Điện thoại di động - TechSophist')}"></head>
+<body>
+
+<!-- Header Navigation matching Figma -->
+<header th:replace="~{fragments/layout :: topbar}"></header>
+
+<!-- Main Container -->
+<main class="container" style="display: flex; gap: 32px; align-items: start;">
+    
+    <!-- Left Sidebar: Filters Panel -->
+    <aside style="width: 280px; flex-shrink: 0; display: flex; flex-direction: column; gap: 24px;">
+        <div class="filter-sidebar">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1.5px solid var(--surface-container); padding-bottom: 12px;">
+                <h2 class="headline-sm" style="font-size: 18px; margin-bottom: 0;">Bộ lọc</h2>
+                <a href="javascript:void(0)" id="clear-filters-btn" style="font-size: 13px; font-weight: 700; color: var(--secondary); text-decoration: none;">Xóa tất cả</a>
+            </div>
+
+            <!-- Brand Checkbox Group -->
+            <div class="filter-group">
+                <h4 class="filter-group-title">Thương hiệu</h4>
+                <label class="checkbox-label"><input type="checkbox" name="brand" value="apple"> Apple</label>
+                <label class="checkbox-label"><input type="checkbox" name="brand" value="samsung"> Samsung</label>
+                <label class="checkbox-label"><input type="checkbox" name="brand" value="xiaomi"> Xiaomi</label>
+                <label class="checkbox-label"><input type="checkbox" name="brand" value="oppo"> Oppo</label>
+                <label class="checkbox-label"><input type="checkbox" name="brand" value="vivo"> Vivo</label>
+            </div>
+
+            <!-- Price Range -->
+            <div class="filter-group">
+                <h4 class="filter-group-title">Khoảng giá</h4>
+                <div style="display: flex; justify-content: space-between; font-size: 12px; color: var(--outline); font-weight: 600; margin-bottom: 8px;">
+                    <span>0 đ</span>
+                    <span id="price-range-display" style="color: var(--secondary); font-weight: 700;">50.000.000 đ+</span>
+                </div>
+                <input type="range" id="price-slider" min="0" max="50000000" value="50000000" step="1000000" style="width: 100%; accent-color: var(--secondary); cursor: pointer;">
+            </div>
+
+            <!-- RAM Capacity -->
+            <div class="filter-group">
+                <h4 class="filter-group-title">Dung lượng RAM</h4>
+                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                    <span class="chip" data-ram="8GB" style="font-size: 12px; padding: 6px 12px; cursor: pointer;">8GB</span>
+                    <span class="chip" data-ram="12GB" style="font-size: 12px; padding: 6px 12px; cursor: pointer;">12GB</span>
+                    <span class="chip" data-ram="16GB" style="font-size: 12px; padding: 6px 12px; cursor: pointer;">16GB</span>
+                </div>
+            </div>
+
+            <!-- Storage capacity -->
+            <div class="filter-group">
+                <h4 class="filter-group-title">Dung lượng Lưu trữ</h4>
+                <label class="checkbox-label"><input type="radio" name="storage" value="128GB"> 128GB</label>
+                <label class="checkbox-label"><input type="radio" name="storage" value="256GB"> 256GB</label>
+                <label class="checkbox-label"><input type="radio" name="storage" value="512GB+"> 512GB+</label>
+                <label class="checkbox-label"><input type="radio" name="storage" value="all" checked> Tất cả dung lượng</label>
+            </div>
+        </div>
+
+        <!-- Trade-in Event Promo Card matching Figma exactly -->
+        <div class="card" style="padding: 24px; background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.8)), url('https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=300&amp;auto=format&amp;fit=crop&amp;q=80'); background-size: cover; background-position: center; border: none; color: #ffffff; min-height: 240px; display: flex; flex-direction: column; justify-content: flex-end; gap: 12px; overflow: hidden; border-radius: var(--radius-lg);">
+            <h4 class="headline-sm" style="color: #ffffff; font-size: 18px; margin-bottom: 0;">Thu cũ Đổi mới</h4>
+            <p style="font-size: 12.5px; color: #cbd5e1; margin-bottom: 8px; line-height: 1.5;">Nhận trợ giá lên tới 15 triệu đồng cho thiết bị cũ của bạn.</p>
+            <a class="btn btn-action" id="trade-in-learn-more" href="javascript:void(0)" style="align-self: flex-start; padding: 8px 16px; font-size: 12px; font-weight: 700; border-radius: var(--radius-default);">Tìm hiểu thêm</a>
+        </div>
+    </aside>
+
+    <!-- Right Workspace Area -->
+    <div style="flex: 1; display: flex; flex-direction: column;">
+        
+        <!-- Smartphones header row -->
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1.5px solid var(--surface-container); padding-bottom: 16px; margin-bottom: 24px; flex-wrap: wrap; gap: 16px;">
+            <div>
+                <h1 class="display-lg" style="margin-bottom: 0; font-size: 32px;">Điện thoại di động</h1>
+                <p class="body-sm" style="color: var(--outline);" id="product-count-text" th:text="'Hiển thị các dòng máy cao cấp (' + ${#lists.size(sanPhams)} + ' sản phẩm)'">Hiển thị các dòng máy cao cấp</p>
+            </div>
+            
+            <div style="display: flex; gap: 16px; align-items: center;">
+                <!-- Grid/List toggle styling demo -->
+                <div style="display: flex; border: 1.5px solid var(--outline-variant); border-radius: var(--radius-default); background-color: var(--surface-container-lowest); overflow: hidden; height: 38px;">
+                    <button id="toggle-grid-btn" style="border: none; background-color: var(--surface-container-low); padding: 8px 12px; font-size: 14px; cursor: pointer; color: var(--primary);"><i class="bi bi-grid-fill"></i></button>
+                    <button id="toggle-list-btn" style="border: none; background: none; padding: 8px 12px; font-size: 14px; cursor: pointer; color: var(--outline);"><i class="bi bi-list"></i></button>
+                </div>
+                
+                <!-- Sort dropdown -->
+                <select id="sort-select" class="form-control" style="padding: 6px 36px 6px 16px; font-size: 13.5px; height: 38px; min-width: 160px; background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2345464D%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%20svg%3E'); background-repeat: no-repeat; background-position: right 12px top 50%; background-size: 8px auto; -webkit-appearance: none; appearance: none; cursor: pointer; border: 1.5px solid var(--outline-variant); border-radius: var(--radius-default); background-color: var(--surface-container-lowest); outline: none;">
+                    <option value="featured">Sắp xếp: Nổi bật</option>
+                    <option value="price-asc">Giá: Thấp đến Cao</option>
+                    <option value="price-desc">Giá: Cao đến Thấp</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Dynamic Product Grid -->
+        <div id="no-products-found" class="card" style="text-align: center; padding: 60px; display: none;">
+            <i class="bi bi-search" style="font-size: 48px; color: var(--outline); display: block; margin-bottom: 16px;"></i>
+            <h3 class="headline-sm">Không tìm thấy sản phẩm nào khớp bộ lọc</h3>
+            <a class="btn btn-primary" href="javascript:void(0)" onclick="resetAllFilters()" style="margin-top: 16px;">Xóa bộ lọc</a>
+        </div>
+
+        <div th:if="${#lists.isEmpty(sanPhams)}" class="card" style="text-align: center; padding: 60px;">
+            <i class="bi bi-search" style="font-size: 48px; color: var(--outline); display: block; margin-bottom: 16px;"></i>
+            <h3 class="headline-sm">Không tìm thấy sản phẩm nào</h3>
+            <a class="btn btn-primary" th:href="@{/san-pham}" style="margin-top: 16px;">Hiển thị tất cả sản phẩm</a>
+        </div>
+
+        <div th:if="${!#lists.isEmpty(sanPhams)}" id="product-grid" class="grid" style="grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; margin-top: 0;">
+            <article class="best-seller-card" th:each="sp : ${sanPhams}" 
+                     th:data-id="${sp.id}"
+                     th:data-brand="${sp.nhaSanXuat != null ? #strings.toLowerCase(sp.nhaSanXuat.tenNhaSanXuat) : ''}"
+                     th:data-price="${sp.gia}"
+                     th:data-ram="${sp.moTa != null and #strings.contains(#strings.toLowerCase(sp.moTa), '16gb') ? '16GB' : (sp.moTa != null and #strings.contains(#strings.toLowerCase(sp.moTa), '12gb') ? '12GB' : '8GB')}"
+                     th:data-storage="${sp.moTa != null and #strings.contains(#strings.toLowerCase(sp.moTa), '512gb') ? '512GB+' : (sp.moTa != null and #strings.contains(#strings.toLowerCase(sp.moTa), '128gb') ? '128GB' : '256GB')}"
+                     style="padding: 16px;">
+                <!-- Product Image container -->
+                <div class="best-seller-image-wrapper" style="height: 180px; margin-bottom: 12px;">
+                     <img th:if="${sp.anhUrl != null}" th:src="@{'/images/' + ${sp.anhUrl}}" th:alt="${sp.tenSanPham}" 
+                          onerror="if (this.alt.toLowerCase().includes('airpods') || this.alt.toLowerCase().includes('tai nghe')) { this.src='https://images.unsplash.com/photo-1588449668365-d15e397f6787?w=300&amp;auto=format&amp;fit=crop&amp;q=60'; } else if (this.alt.toLowerCase().includes('samsung')) { this.src='https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=300&amp;auto=format&amp;fit=crop&amp;q=60'; } else if (this.alt.toLowerCase().includes('watch')) { this.src='https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?w=300&amp;auto=format&amp;fit=crop&amp;q=60'; } else { this.src='https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=300&amp;auto=format&amp;fit=crop&amp;q=60'; }">
+                     <img th:if="${sp.anhUrl == null}" src="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=300&amp;auto=format&amp;fit=crop&amp;q=60" alt="Default Product Image">
+                    
+                    <!-- Rounded/Square small brand tag -->
+                    <span class="best-seller-brand" style="font-size: 9px; font-weight: 700;" th:text="${sp.nhaSanXuat != null ? #strings.substring(sp.nhaSanXuat.tenNhaSanXuat,0,1) : 'S'}">S</span>
+                </div>
+
+                <!-- Product metadata -->
+                <div class="product-details-content" style="flex: 1; display: flex; flex-direction: column;">
+                    <h3 class="best-seller-title" style="font-size: 15px; margin-bottom: 4px;" th:text="${sp.tenSanPham}">Tên điện thoại</h3>
+                    <p class="body-sm" style="font-size: 11.5px; color: var(--on-surface-variant); margin-bottom: 12px; min-height: 36px; line-height: 1.4;" th:text="${#strings.abbreviate(sp.moTa != null ? sp.moTa : 'Cấu hình chi tiết chuẩn cao cấp.', 55)}">256GB, Titanium, cấu hình...</p>
+                </div>
+                
+                <div class="best-seller-footer" style="padding-top: 8px; border-top: 1px solid var(--surface-container-low); width: 100%;">
+                    <div class="best-seller-price" style="font-size: 16px;" th:text="${#numbers.formatDecimal(sp.gia, 0, 'COMMA', 0, 'POINT') + ' đ'}">29.990.000 đ</div>
+                    
+                    <!-- Direct Action Links -->
+                    <a class="best-seller-cart-btn" style="text-decoration: none;" th:href="@{'/san-pham/' + ${sp.id}}">
+                        <i class="bi bi-chevron-right" style="font-size: 14px;"></i>
+                    </a>
+                </div>
+            </article>
+        </div>
+
+        <!-- Elegant Pagination -->
+        <div class="pagination" th:if="${totalPages > 1}" id="pagination-container">
+            <a class="pagination-item"
+               th:if="${hasPrevious}"
+               th:href="@{/san-pham(page=${currentPage - 1}, q=${q}, loaiId=${loaiId})}">
+                <i class="bi bi-chevron-left"></i>
+            </a>
+            
+            <span class="pagination-item active" th:text="${currentPage + 1}">1</span>
+            
+            <span style="font-size: 14px; font-weight: 500; margin: 0 8px; color: var(--outline);">trên <b th:text="${totalPages}" style="color: var(--primary);">1</b></span>
+            
+            <a class="pagination-item"
+               th:if="${hasNext}"
+               th:href="@{/san-pham(page=${currentPage + 1}, q=${q}, loaiId=${loaiId})}">
+                <i class="bi bi-chevron-right"></i>
+            </a>
+        </div>
+        
+    </div>
+
+</main>
+
+<!-- Glassmorphism Trade-in Promo Modal -->
+<div id="trade-in-modal" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(9, 13, 22, 0.6); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); display: none; align-items: center; justify-content: center; z-index: 1000; padding: 24px;">
+    <div style="background-color: var(--surface-container-lowest); border: 1px solid var(--surface-container); border-radius: var(--radius-xl); max-width: 500px; width: 100%; padding: 36px; box-shadow: var(--shadow-level-2); position: relative; animation: modalFadeIn 0.3s ease;">
+        <button id="close-modal-btn" style="position: absolute; top: 20px; right: 20px; border: none; background: none; font-size: 24px; cursor: pointer; color: var(--outline);"><i class="bi bi-x-lg"></i></button>
+        <div style="text-align: center; margin-bottom: 24px;">
+            <div style="width: 60px; height: 60px; background-color: var(--success-container); color: var(--success); border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; font-size: 28px; margin: 0 auto 16px;"><i class="bi bi-arrow-left-right"></i></div>
+            <h3 style="font-size: 22px; font-weight: 700; color: var(--primary); margin-bottom: 8px;">Chương trình Thu cũ Đổi mới</h3>
+            <p style="font-size: 13.5px; color: var(--on-surface-variant); line-height: 1.6;">Lên đời dòng máy đỉnh cao TechSophist với ưu đãi tốt nhất thị trường.</p>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 16px; margin-bottom: 28px;">
+            <div style="background-color: var(--surface-container-low); padding: 16px; border-radius: var(--radius-md); display: flex; gap: 12px; align-items: center;">
+                <i class="bi bi-check-circle-fill" style="color: var(--secondary); font-size: 18px;"></i>
+                <div style="font-size: 13px; font-weight: 600; color: var(--primary);">Định giá cũ nhanh chóng trong 5 phút</div>
+            </div>
+            <div style="background-color: var(--surface-container-low); padding: 16px; border-radius: var(--radius-md); display: flex; gap: 12px; align-items: center;">
+                <i class="bi bi-check-circle-fill" style="color: var(--secondary); font-size: 18px;"></i>
+                <div style="font-size: 13px; font-weight: 600; color: var(--primary);">Trợ giá lên tới 15.000.000 đ khi mua máy mới</div>
+            </div>
+            <div style="background-color: var(--surface-container-low); padding: 16px; border-radius: var(--radius-md); display: flex; gap: 12px; align-items: center;">
+                <i class="bi bi-check-circle-fill" style="color: var(--secondary); font-size: 18px;"></i>
+                <div style="font-size: 13px; font-weight: 600; color: var(--primary);">Thủ tục cực đơn giản, nhận máy mới ngay lập tức</div>
+            </div>
+        </div>
+        <div style="display: flex; gap: 12px;">
+            <button id="modal-action-btn" class="btn btn-action" style="flex: 1; padding: 12px; font-weight: 700;" onclick="alert('Cảm ơn bạn! Yêu cầu đăng ký đã được gửi đi. Nhân viên hỗ trợ sẽ liên hệ lại trong vòng 15 phút.')">Đăng ký định giá ngay</button>
+            <button id="modal-cancel-btn" class="btn btn-secondary" style="flex: 1; padding: 12px;">Đóng lại</button>
+        </div>
+    </div>
+</div>
+
+<!-- Custom List Mode Styles & Modal Animation -->
+<style>
+@keyframes modalFadeIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+/* CSS for List View toggle in product list */
+#product-grid.list-view-active {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 16px !important;
+}
+
+#product-grid.list-view-active .best-seller-card {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 24px !important;
+    width: 100% !important;
+    padding: 20px !important;
+}
+
+#product-grid.list-view-active .best-seller-card .best-seller-image-wrapper {
+    width: 140px !important;
+    height: 140px !important;
+    margin-bottom: 0 !important;
+    flex-shrink: 0 !important;
+}
+
+#product-grid.list-view-active .best-seller-card .product-details-content {
+    flex: 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+}
+
+#product-grid.list-view-active .best-seller-card .best-seller-title {
+    font-size: 18px !important;
+    margin-bottom: 8px !important;
+}
+
+#product-grid.list-view-active .best-seller-card .best-seller-footer {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-end !important;
+    gap: 12px !important;
+    margin-left: auto !important;
+    border-top: none !important;
+    padding-top: 0 !important;
+    justify-content: center !important;
+    width: auto !important;
+}
+
+@media (max-width: 576px) {
+    #product-grid.list-view-active .best-seller-card {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+    }
+    #product-grid.list-view-active .best-seller-card .best-seller-footer {
+        margin-left: 0 !important;
+        align-items: flex-start !important;
+        width: 100% !important;
+    }
+}
+</style>
+
+<!-- Premium Client-Side Filtering, Sorting, Layout-Toggle & Trade-in Modal logic -->
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    // DOM Elements
+    const productGrid = document.getElementById("product-grid");
+    const productCards = Array.from(document.querySelectorAll("#product-grid .best-seller-card"));
+    const brandCheckboxes = document.querySelectorAll('.filter-group input[name="brand"]');
+    const priceSlider = document.getElementById("price-slider");
+    const priceDisplay = document.getElementById("price-range-display");
+    const ramChips = document.querySelectorAll('.filter-group .chip');
+    const storageRadios = document.querySelectorAll('.filter-group input[name="storage"]');
+    const clearFiltersBtn = document.getElementById("clear-filters-btn");
+    const sortSelect = document.getElementById("sort-select");
+    const toggleGridBtn = document.getElementById("toggle-grid-btn");
+    const toggleListBtn = document.getElementById("toggle-list-btn");
+    const noProductsFound = document.getElementById("no-products-found");
+    const productCountText = document.getElementById("product-count-text");
+    const paginationContainer = document.getElementById("pagination-container");
+
+    // Modal Elements
+    const tradeInModal = document.getElementById("trade-in-modal");
+    const tradeInLearnMore = document.getElementById("trade-in-learn-more");
+    const closeModalBtn = document.getElementById("close-modal-btn");
+    const modalCancelBtn = document.getElementById("modal-cancel-btn");
+
+    // State Variables
+    let selectedBrands = [];
+    let maxPrice = 50000000;
+    let selectedRam = null;
+    let selectedStorage = "all";
+    let sortMode = "featured";
+    let isListView = false;
+
+    // Initialize display values
+    updatePriceRangeDisplay(priceSlider.value);
+
+    // 1. FILTERING LOGIC
+    function applyFilters() {
+        let visibleCount = 0;
+
+        productCards.forEach(card => {
+            const brand = card.getAttribute("data-brand");
+            const price = parseFloat(card.getAttribute("data-price"));
+            const ram = card.getAttribute("data-ram");
+            const storage = card.getAttribute("data-storage");
+
+            // Brand match (if no brands checked, all match)
+            const brandMatch = selectedBrands.length === 0 || selectedBrands.includes(brand);
+            // Price match
+            const priceMatch = price <= maxPrice;
+            // RAM match
+            const ramMatch = !selectedRam || ram === selectedRam;
+            // Storage match
+            const storageMatch = selectedStorage === "all" || storage === selectedStorage;
+
+            if (brandMatch && priceMatch && ramMatch && storageMatch) {
+                card.style.display = isListView ? "flex" : "block";
+                visibleCount++;
+            } else {
+                card.style.display = "none";
+            }
+        });
+
+        // Toggle "No products found" indicator
+        if (visibleCount === 0) {
+            noProductsFound.style.display = "block";
+            if (productGrid) productGrid.style.display = "none";
+            if (paginationContainer) paginationContainer.style.display = "none";
+        } else {
+            noProductsFound.style.display = "none";
+            if (productGrid) {
+                if (isListView) {
+                    productGrid.style.display = "flex";
+                } else {
+                    productGrid.style.display = "grid";
+                }
+            }
+            if (paginationContainer) paginationContainer.style.display = "flex";
+        }
+
+        // Update product count label
+        productCountText.textContent = `Hiển thị các dòng máy cao cấp (${visibleCount} sản phẩm)`;
+    }
+
+    // 2. SORTING LOGIC
+    function applySort() {
+        if (!productGrid) return;
+        
+        let sortedCards = [...productCards];
+
+        if (sortMode === "price-asc") {
+            sortedCards.sort((a, b) => parseFloat(a.getAttribute("data-price")) - parseFloat(b.getAttribute("data-price")));
+        } else if (sortMode === "price-desc") {
+            sortedCards.sort((a, b) => parseFloat(b.getAttribute("data-price")) - parseFloat(a.getAttribute("data-price")));
+        } else {
+            // Default Sort: by ID (featured)
+            sortedCards.sort((a, b) => parseInt(a.getAttribute("data-id")) - parseInt(b.getAttribute("data-id")));
+        }
+
+        // Re-append sorted elements
+        sortedCards.forEach(card => productGrid.appendChild(card));
+        
+        // Re-apply filter visibility
+        applyFilters();
+    }
+
+    // 3. LISTENERS
+    // Brand selection
+    brandCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener("change", function() {
+            selectedBrands = Array.from(brandCheckboxes)
+                .filter(i => i.checked)
+                .map(i => i.value.toLowerCase());
+            applyFilters();
+        });
+    });
+
+    // Price Slider
+    priceSlider.addEventListener("input", function(e) {
+        maxPrice = parseFloat(e.target.value);
+        updatePriceRangeDisplay(maxPrice);
+        applyFilters();
+    });
+
+    function updatePriceRangeDisplay(val) {
+        if (parseFloat(val) >= 50000000) {
+            priceDisplay.textContent = "50.000.000 đ+";
+        } else {
+            priceDisplay.textContent = new Intl.NumberFormat('vi-VN').format(val) + " đ";
+        }
+    }
+
+    // RAM chips
+    ramChips.forEach(chip => {
+        chip.addEventListener("click", function() {
+            if (this.classList.contains("active")) {
+                this.classList.remove("active");
+                selectedRam = null;
+            } else {
+                ramChips.forEach(c => c.classList.remove("active"));
+                this.classList.add("active");
+                selectedRam = this.getAttribute("data-ram");
+            }
+            applyFilters();
+        });
+    });
+
+    // Storage Radio
+    storageRadios.forEach(radio => {
+        radio.addEventListener("change", function() {
+            selectedStorage = this.value;
+            applyFilters();
+        });
+    });
+
+    // Reset filters
+    window.resetAllFilters = function() {
+        brandCheckboxes.forEach(i => i.checked = false);
+        selectedBrands = [];
+        
+        priceSlider.value = 50000000;
+        maxPrice = 50000000;
+        updatePriceRangeDisplay(50000000);
+        
+        ramChips.forEach(c => c.classList.remove("active"));
+        selectedRam = null;
+        
+        storageRadios.forEach(r => {
+            if (r.value === "all") r.checked = true;
+        });
+        selectedStorage = "all";
+        
+        applyFilters();
+    };
+
+    if (clearFiltersBtn) {
+        clearFiltersBtn.addEventListener("click", function(e) {
+            e.preventDefault();
+            resetAllFilters();
+        });
+    }
+
+    // Sort select
+    sortSelect.addEventListener("change", function() {
+        sortMode = this.value;
+        applySort();
+    });
+
+    // Layout Display Mode switching
+    if (toggleGridBtn && toggleListBtn) {
+        toggleGridBtn.addEventListener("click", function() {
+            isListView = false;
+            productGrid.classList.remove("list-view-active");
+            
+            toggleGridBtn.style.backgroundColor = "var(--surface-container-low)";
+            toggleGridBtn.style.color = "var(--primary)";
+            toggleListBtn.style.backgroundColor = "transparent";
+            toggleListBtn.style.color = "var(--outline)";
+            
+            applyFilters();
+        });
+
+        toggleListBtn.addEventListener("click", function() {
+            isListView = true;
+            productGrid.classList.add("list-view-active");
+            
+            toggleListBtn.style.backgroundColor = "var(--surface-container-low)";
+            toggleListBtn.style.color = "var(--primary)";
+            toggleGridBtn.style.backgroundColor = "transparent";
+            toggleGridBtn.style.color = "var(--outline)";
+            
+            applyFilters();
+        });
+    }
+
+    // 4. TRADE-IN MODAL LOGIC
+    if (tradeInLearnMore) {
+        tradeInLearnMore.addEventListener("click", function() {
+            tradeInModal.style.display = "flex";
+        });
+    }
+
+    function closeModal() {
+        tradeInModal.style.display = "none";
+    }
+
+    if (closeModalBtn) closeModalBtn.addEventListener("click", closeModal);
+    if (modalCancelBtn) modalCancelBtn.addEventListener("click", closeModal);
+    
+    // Close modal when clicking outside contents
+    tradeInModal.addEventListener("click", function(e) {
+        if (e.target === tradeInModal) {
+            closeModal();
+        }
+    });
+});
+</script>
+
+<!-- Footer matching Figma -->
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+</body>
+</html>

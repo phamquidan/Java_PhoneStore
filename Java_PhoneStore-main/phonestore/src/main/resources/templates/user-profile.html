@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: html-head('Hồ sơ cá nhân - TechSophist')}"></head>
+<body>
+
+<!-- Header Navigation -->
+<header th:replace="~{fragments/layout :: topbar}"></header>
+
+<!-- Main Container -->
+<main class="container">
+    
+    <div style="margin-bottom: 32px; display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 16px;">
+        <div>
+            <div class="label-mono" style="color: var(--secondary); font-weight: 700; margin-bottom: 4px;">Quản lý tài khoản</div>
+            <h1 class="display-lg" style="margin-bottom: 0;">Hồ sơ cá nhân</h1>
+        </div>
+        <a class="btn btn-secondary" th:href="@{/user/dashboard}">
+            <i class="bi bi-arrow-left"></i> Bảng điều khiển
+        </a>
+    </div>
+
+    <!-- Success Alert -->
+    <div th:if="${success}" class="alert alert-success" style="max-width: 680px; margin: 0 auto 24px auto; padding: 16px; border-radius: var(--radius-sm); font-weight: 600;" th:text="${success}"></div>
+
+    <!-- Profile Details Form Card -->
+    <div class="card" th:if="${user}" style="max-width: 680px; margin: 0 auto; padding: 40px; border-radius: var(--radius-lg); box-shadow: var(--shadow-level-2);">
+        
+        <div style="display: flex; align-items: center; gap: 20px; border-bottom: 1px solid var(--surface-container); padding-bottom: 24px; margin-bottom: 32px;">
+            <div style="width: 64px; height: 64px; background-color: var(--surface-container-low); border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; font-size: 26px; color: var(--secondary);">
+                <i class="bi bi-person-badge"></i>
+            </div>
+            <div>
+                <h2 class="headline-sm" style="margin-bottom: 4px;" th:text="${user.hoTen}">Tên đầy đủ</h2>
+                <p class="body-sm" style="color: var(--outline); margin-bottom: 0;">Cập nhật thông tin chi tiết tài khoản của bạn</p>
+            </div>
+        </div>
+
+        <form method="post" th:action="@{/user/profile/cap-nhat}">
+            <div style="display: flex; flex-direction: column; gap: 20px;">
+                
+                <!-- Fullname -->
+                <div>
+                    <label class="label-mono" style="color: var(--outline); font-size: 11px; display: block; margin-bottom: 8px;"><i class="bi bi-person-fill"></i> Họ và tên:</label>
+                    <input type="text" name="hoTen" th:value="${user.hoTen}" class="form-control" style="font-weight: 600; color: var(--primary);" required>
+                </div>
+                
+                <!-- Email -->
+                <div>
+                    <label class="label-mono" style="color: var(--outline); font-size: 11px; display: block; margin-bottom: 8px;"><i class="bi bi-envelope-fill"></i> Địa chỉ Email:</label>
+                    <input type="email" name="email" th:value="${user.email}" class="form-control" style="font-weight: 600; color: var(--primary);" required>
+                </div>
+                
+                <!-- Phone -->
+                <div>
+                    <label class="label-mono" style="color: var(--outline); font-size: 11px; display: block; margin-bottom: 8px;"><i class="bi bi-telephone-fill"></i> Số điện thoại:</label>
+                    <input type="text" name="soDienThoai" th:value="${user.soDienThoai}" class="form-control" style="font-weight: 600; color: var(--primary);" required>
+                </div>
+
+                <!-- Address -->
+                <div>
+                    <label class="label-mono" style="color: var(--outline); font-size: 11px; display: block; margin-bottom: 8px;"><i class="bi bi-geo-alt-fill"></i> Địa chỉ nhận hàng:</label>
+                    <input type="text" name="diaChi" th:value="${user.diaChi}" class="form-control" placeholder="Nhập địa chỉ nhận hàng của bạn..." style="font-weight: 500; color: var(--on-surface-variant);">
+                </div>
+                
+                <!-- Date of Birth -->
+                <div>
+                    <label class="label-mono" style="color: var(--outline); font-size: 11px; display: block; margin-bottom: 8px;"><i class="bi bi-calendar-check-fill"></i> Ngày sinh:</label>
+                    <input type="date" name="ngaySinh" th:value="${user.ngaySinh}" class="form-control" style="font-weight: 500; color: var(--on-surface-variant);">
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 16px; margin-top: 32px; justify-content: flex-end;">
+                <a class="btn btn-secondary" th:href="@{/user/dashboard}">
+                    <i class="bi bi-chevron-left"></i> Quay lại
+                </a>
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-check-circle"></i> Cập nhật hồ sơ
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Error state -->
+    <div class="card" th:if="${user == null}" style="text-align: center; padding: 60px;">
+        <i class="bi bi-exclamation-octagon" style="font-size: 48px; color: var(--error); display: block; margin-bottom: 16px;"></i>
+        <h3 class="headline-sm">Lỗi tải hồ sơ</h3>
+        <p class="body-sm" style="color: var(--outline);">Không thể lấy thông tin chi tiết tài khoản của bạn vào lúc này.</p>
+        <a class="btn btn-primary" th:href="@{/}">Quay lại trang chủ</a>
+    </div>
+
+</main>
+
+<!-- Footer -->
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+</body>
+</html>

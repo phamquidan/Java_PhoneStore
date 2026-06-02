@@ -1,0 +1,67 @@
+# Hướng dẫn Kiểm tra và Nghiệm thu các Thay đổi (Walkthrough & Verification)
+
+Dự án **`d:\phonestore\phonestore`** đã được cấu trúc lại một cách toàn diện và khoa học, khắc phục hoàn toàn tất cả các lỗi bất tương thích cơ sở dữ liệu, lỗi bảo mật phân quyền và các lỗi logic nghiệp vụ.
+
+---
+
+## 🛠️ Danh sách các Thay đổi lớn đã thực hiện
+
+### 1. Đồng bộ hóa ORM Entity sang Cơ sở dữ liệu Thực tế
+- Di chuyển toàn bộ mô hình dữ liệu sang cấu trúc thư mục mới: `com.shop.phonestore.entity`.
+- Thay thế các ánh xạ sai lệch trước đây bằng các ánh xạ chuẩn 100% khớp với [QL_CUAHANGDIENTHOAI.sql](file:///d:/phonestore/QL_CUAHANGDIENTHOAI.sql):
+  - Ánh xạ lớp `SanPham` sang bảng `HANGHOA` (sử dụng cột `MAHG`, `TENHG`, `GIABAN`, `SOLUONGTON`).
+  - Ánh xạ lớp `ChiTietGioHang` sang bảng `CHITIETGIOHANG` sử dụng khóa phức hợp `(MAGH, MAHG)` thông qua lớp khóa phụ trợ `ChiTietGioHangId`.
+  - Ánh xạ lớp `ChiTietDonHang` sang bảng `CHITIETHD` sử dụng khóa phức hợp `(MAHD, MAHG)` thông qua lớp khóa phụ trợ `ChiTietDonHangId`.
+
+### 2. Kiến trúc Modular hóa chuyên nghiệp
+Tách biệt toàn bộ mã nguồn Java phẳng cũ thành các phân hệ riêng biệt để quản trị dễ dàng:
+- `com.shop.phonestore.config` (Cấu hình hệ thống & Khởi tạo dữ liệu)
+- `com.shop.phonestore.controller` (Điều khiển giao diện người dùng)
+- `com.shop.phonestore.controller.api` (Các endpoints REST API hỗ trợ AJAX)
+- `com.shop.phonestore.entity` (Các thực thể CSDL)
+- `com.shop.phonestore.repository` (Các lớp kho lưu trữ Spring Data JPA)
+- `com.shop.phonestore.service` (Các lớp xử lý nghiệp vụ chính)
+
+### 3. Vá Lỗ hổng Bảo mật Phân quyền (Security Patch)
+Trong [SecurityConfig.java](file:///d:/phonestore/phonestore/src/main/java/com/shop/phonestore/config/SecurityConfig.java):
+- Đường dẫn Admin `/san-pham/admin/**` đã được đưa lên trên và chặn hoàn toàn khách truy cập chưa đăng nhập.
+- Sửa lỗi regex rộng `/san-pham/*` thành chỉ chấp nhận ID sản phẩm là dạng số `/san-pham/{id:\\d+}` cho trang chi tiết công khai.
+
+### 4. Logic trừ kho và kiểm tra tồn kho khi thanh toán
+Trong `checkout()` của [DonHangService.java](file:///d:/phonestore/phonestore/src/main/java/com/shop/phonestore/service/DonHangService.java):
+- Đọc số lượng còn lại của sản phẩm trong bảng `HANGHOA`.
+- Nếu khách hàng đặt mua vượt quá số lượng trong kho, hệ thống sẽ ném ra ngoại lệ và tự động **Rollback** giao dịch nhờ nhãn `@Transactional`.
+- Cập nhật số lượng còn lại vào kho hàng ngay sau khi thanh toán thành công.
+
+### 5. Khắc phục lỗi Tài khoản Seed
+- Dữ liệu tài khoản trong [data.sql](file:///d:/phonestore/data.sql) đã được đổi mật khẩu thô `'123456'` thành chuỗi băm chuẩn mã hóa BCrypt tương ứng. Giờ đây bạn có thể đăng nhập bằng tài khoản `admin` / `123456` bình thường!
+
+### 6. Cập nhật Giao diện Premium Responsive
+- Sao chép toàn bộ HTML templates cao cấp, glassmorphic và responsive từ dự án cấu trúc sang thư mục `templates` của bạn.
+- Bổ sung file `app.css` chứa hệ thống design system mượt mà và bóng bẩy.
+
+---
+
+## 🧭 Hướng dẫn Kiểm tra thủ công (Manual Verification Guide)
+
+Sau khi khởi chạy ứng dụng Spring Boot từ IDE của bạn (IntelliJ, Eclipse, hoặc VS Code), hãy tiến hành các bước kiểm tra sau để nghiệm thu:
+
+### Bước 1: Kiểm tra Đăng nhập tài khoản mẫu
+1. Truy cập trang Đăng nhập tại đường dẫn `/login`.
+2. Đăng nhập bằng tài khoản mẫu:
+   - **Tài khoản:** `admin`
+   - **Mật khẩu:** `123456`
+3. Xác nhận đăng nhập thành công và được chuyển hướng về trang chủ với quyền Admin.
+
+### Bước 2: Kiểm tra Phân quyền Admin
+1. Thử đăng xuất tài khoản Admin.
+2. Với vai trò Khách vãng lai, truy cập trực tiếp đường dẫn: `/san-pham/admin`.
+3. Xác nhận hệ thống tự động chặn đứng và chuyển hướng bạn về trang đăng nhập `/login` (Khắc phục hoàn toàn lỗ hổng leo quyền trước đó).
+
+### Bước 3: Kiểm tra Trừ kho & Kiểm kho
+1. Đăng nhập bằng tài khoản Khách hàng (ví dụ: `user` / `user123` được khởi tạo tự động, hoặc đăng ký tài khoản mới).
+2. Chọn sản phẩm **Samsung Galaxy S24 Ultra** (Số lượng trong kho ban đầu là **20** sản phẩm).
+3. Thêm sản phẩm vào giỏ hàng và thực hiện Thanh toán.
+4. Xác nhận đặt hàng thành công và hệ thống hiển thị hóa đơn chuẩn.
+5. Truy cập lại trang quản trị của Admin hoặc cơ sở dữ liệu SQL Server.
+6. Xác nhận số lượng tồn kho của **Samsung Galaxy S24 Ultra** đã tự động giảm xuống còn **19** sản phẩm!

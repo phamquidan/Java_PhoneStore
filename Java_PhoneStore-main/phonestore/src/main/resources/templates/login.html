@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: html-head('Đăng nhập - TechSophist')}"></head>
+<body style="background-color: var(--surface); min-height: 100vh; display: flex; flex-direction: column;">
+
+<!-- Header Navigation -->
+<header th:replace="~{fragments/layout :: topbar}"></header>
+
+<!-- Main Container -->
+<main class="container" style="display: flex; align-items: center; justify-content: center; min-height: calc(100vh - 180px);">
+    
+    <section class="card" style="width: 100%; max-width: 440px; margin: 0 auto; box-shadow: var(--shadow-level-2); border-radius: var(--radius-lg); padding: 40px; border: 1px solid var(--surface-container); background-color: var(--surface-container-lowest);">
+        <div style="text-align: center; margin-bottom: 32px;">
+            <div style="width: 48px; height: 48px; background-color: var(--surface-container-low); border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; font-size: 22px; color: var(--secondary); margin: 0 auto 16px; border: 1px solid var(--surface-container);"><i class="bi bi-shield-lock-fill"></i></div>
+            <h2 class="headline-md" style="margin-bottom: 8px; font-weight: 700; font-size: 24px; color: var(--primary);">Chào mừng trở lại</h2>
+            <p class="body-sm" style="color: var(--outline); font-size: 13.5px;">Đăng nhập tài khoản TechSophist của bạn</p>
+        </div>
+
+        <!-- Alerts -->
+        <div class="alert alert-error" th:if="${param.error}" style="margin-bottom: 24px;">
+            <i class="bi bi-exclamation-triangle-fill" style="font-size: 16px;"></i> 
+            <span>Sai tên đăng nhập hoặc mật khẩu.</span>
+        </div>
+        <div class="alert alert-success" th:if="${param.logout}" style="margin-bottom: 24px;">
+            <i class="bi bi-check-circle-fill" style="font-size: 16px;"></i> 
+            <span>Bạn đã đăng xuất thành công.</span>
+        </div>
+
+        <form method="post" th:action="@{/login}">
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label class="form-label" for="username" style="font-size: 11px; margin-bottom: 6px;">Tên đăng nhập</label>
+                <div class="input-icon-wrapper">
+                    <input class="form-control" id="username" name="tenDangNhap" placeholder="Nhập tên đăng nhập của bạn..." required>
+                    <i class="bi bi-person-fill"></i>
+                </div>
+            </div>
+            
+            <div class="form-group" style="margin-bottom: 24px;">
+                <label class="form-label" for="password" style="font-size: 11px; margin-bottom: 6px;">Mật khẩu</label>
+                <div class="input-icon-wrapper">
+                    <input class="form-control" id="password" type="password" name="matKhau" placeholder="Nhập mật khẩu..." required>
+                    <i class="bi bi-lock-fill"></i>
+                </div>
+            </div>
+            
+            <button class="btn btn-primary" type="submit" style="width: 100%; justify-content: center; padding: 13px; font-size: 14.5px; font-weight: 700; border-radius: var(--radius-default); background-color: var(--primary); transition: transform 0.2s ease;">
+                Đăng nhập <i class="bi bi-arrow-right" style="margin-left: 6px;"></i>
+            </button>
+        </form>
+        
+        <div style="border-top: 1px solid var(--surface-container); margin-top: 28px; padding-top: 20px; text-align: center; display: flex; flex-direction: column; gap: 14px;">
+            <div style="font-size: 13.5px; color: var(--on-surface-variant);">
+                Chưa có tài khoản? 
+                <a th:href="@{/register}" style="color: var(--secondary); font-weight: 700; text-decoration: none; margin-left: 4px;">Tạo tài khoản mới</a>
+            </div>
+            <div>
+                <a th:href="@{/}" style="font-size: 13px; color: var(--outline); text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; margin-top: 4px;" class="icon-link-hover">
+                    <i class="bi bi-arrow-left"></i> Quay lại trang chủ
+                </a>
+            </div>
+        </div>
+    </section>
+
+</main>
+
+<!-- Footer -->
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+</body>
+</html>
